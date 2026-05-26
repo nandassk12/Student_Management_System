@@ -1,0 +1,54 @@
+# ── Virtual Environment ──────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Environment Variables ────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Testing ──────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# ── Alembic ──────────────────────────────────
+# Keep migrations but ignore local db
+alembic/versions/__pycache__/
+
+# ── Docker ───────────────────────────────────
+# (keep Dockerfile and docker-compose.yml tracked)
+
+# ── IDEs & Editors ───────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ── Misc ─────────────────────────────────────
+*.tmp
+*.bak
