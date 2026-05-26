@@ -1,6 +1,24 @@
-# College Student Management System API
+# College Student Management System
 
-A state-of-the-art, production-ready, fully asynchronous backend for a college Student Management System. Built using **FastAPI**, **PostgreSQL** (via **SQLAlchemy 2.0 Async**), **JWT Role-Based Access Control (RBAC)**, **Pydantic v2**, **slowapi** for rate limiting, and **fastapi-cache2** for in-memory caching.
+A production-ready backend API for managing college students,
+built with FastAPI, PostgreSQL, JWT authentication, and Docker.
+
+Built as Phase 2 of an internship project — upgraded from a basic
+CRUD system to a full college portal with the following modules:
+
+- Role-based access control (Admin, Teacher, Student)
+- Authentication & JWT security
+- Department, Course & Class management
+- Student profiles & enrollment
+- Attendance tracking & predictor
+- Grades & GPA calculator
+- Fee management
+- Leave request system
+- Notice board
+- Study material uploads
+- Dashboard per role
+- Rate limiting & request logging
+- In-memory caching
 
 ---
 
