@@ -38,6 +38,9 @@ jobs:
   backend-ci:
     name: Backend Test & Verify
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
+      SECRET_KEY: dummy_secret_key_for_testing_purposes
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
