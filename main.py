@@ -12,7 +12,7 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from datetime import datetime
 from app.database import AsyncSessionLocal, Base, engine
 from app.middleware import register_middleware
 

@@ -12,10 +12,10 @@ Users router (Admin only):
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import select,func
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.auth import require_admin
+from app.auth.auth import require_admin,require_teacher
 from app.database import get_db
 from app.models.role import Role
 from app.models.user import User
@@ -87,7 +87,7 @@ async def create_user(
 )
 async def list_users(
     db: Annotated[AsyncSession, Depends(get_db)],
-    _: Annotated[TokenData, Depends(require_admin)],
+    current_user: Annotated[TokenData, Depends(require_teacher)],
     role_id: int | None = Query(None, description="Filter by role ID"),
     role_name: str | None = Query(None, alias="role", description="Filter by role name"),
     username: str | None = Query(None, description="Filter/search by username (substring, case-insensitive)"),
@@ -95,7 +95,11 @@ async def list_users(
     limit: int = Query(10, ge=1, le=100, description="Max records to return"),
 ) -> list[UserOut]:
     query = select(User)
-    
+
+    # If teacher, force students only
+    if current_user.role_name == "teacher" and role_name is None and role_id is None:
+        role_name = "student"
+
     if role_id is not None:
         query = query.where(User.role_id == role_id)
     if role_name is not None:

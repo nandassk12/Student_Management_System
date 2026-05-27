@@ -9,3 +9,5 @@ venv/
 logs/
 uploads/
 *.log
+node_modules/
+dist/
