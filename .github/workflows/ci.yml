@@ -41,6 +41,9 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
       SECRET_KEY: dummy_secret_key_for_testing_purposes
+      OPENWEBUI_BASE_URL: https://api.mock-url.com
+      OPENWEBUI_API_KEY: mock_key_for_ci_testing
+      OPENWEBUI_MODEL: mock-gpt-model
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
