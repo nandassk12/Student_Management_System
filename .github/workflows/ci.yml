@@ -34,42 +34,47 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-  # ─── 2. Backend Verification ─────────────────────────────────────────────────
-  backend-ci:
-    name: Backend Test & Verify
-    runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
-      SECRET_KEY: dummy_secret_key_for_testing_purposes
-      OPENWEBUI_BASE_URL: https://api.mock-url.com
-      OPENWEBUI_API_KEY: mock_key_for_ci_testing
-      OPENWEBUI_MODEL: mock-gpt-model
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev gcc
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest httpx
-
-      - name: Verify application imports
-        run: python -c "import main"
-
-      - name: Run backend tests
-        run: python -m pytest tests/
+ # ─── 2. Backend Verification ─────────────────────────────────────────────────
+backend-ci:
+  name: Backend Test & Verify
+  runs-on: ubuntu-latest
+  env:
+    DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
+    SECRET_KEY: dummy_secret_key_for_testing_purposes
+    OPENWEBUI_BASE_URL: https://api.mock-url.com
+    OPENWEBUI_API_KEY: mock_key_for_ci_testing
+    OPENWEBUI_MODEL: mock-gpt-model
+  defaults:
+    run:
+      working-directory: ./student_management_system  # ← ADD THIS
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: student_management_system/requirements.txt  # ← FIX PATH
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libpq-dev gcc
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest httpx
+    - name: Verify application imports
+      env:                                      # ← ADD STEP-LEVEL ENV (belt & suspenders)
+        DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
+        SECRET_KEY: dummy_secret_key_for_testing_purposes
+        OPENWEBUI_BASE_URL: https://api.mock-url.com
+        OPENWEBUI_API_KEY: mock_key_for_ci_testing
+        OPENWEBUI_MODEL: mock-gpt-model
+      run: python -c "import main"
+    - name: Run backend tests
+      run: python -m pytest tests/
 
   # ─── 3. Docker Build Verification ──────────────────────────────────────────
   docker-ci:
