@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { format, parseISO } from 'date-fns'
 import axiosInstance from '@api/axios.js'
@@ -76,7 +77,8 @@ export default function AdminTeachers() {
                   <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Username</th>
                   <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Email</th>
                   <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Created At</th>
-                  <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider text-right">Status</th>
+                  <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Status</th>
+                  <th className="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#e2e8f0]">
@@ -88,7 +90,7 @@ export default function AdminTeachers() {
                     <td className="p-4 text-xs text-[#64748b]">
                       {teacher.created_at ? format(parseISO(teacher.created_at), 'MMM dd, yyyy') : 'N/A'}
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-4">
                       <span className={`inline-flex px-2 py-0.5 text-[10px] font-black rounded-full border uppercase tracking-wider ${
                         teacher.is_active
                           ? 'text-green-600 bg-green-50 border-green-200 shadow-sm'
@@ -96,6 +98,14 @@ export default function AdminTeachers() {
                       }`}>
                         {teacher.is_active ? 'active' : 'inactive'}
                       </span>
+                    </td>
+                    <td className="p-4 text-right">
+                      <Link
+                        to={`/admin/users/${teacher.id}/documents`}
+                        className="text-xs font-bold text-[#1e3a5f] hover:text-[#152a46] transition-colors"
+                      >
+                        View Documents
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -107,3 +117,4 @@ export default function AdminTeachers() {
     </div>
   )
 }
+

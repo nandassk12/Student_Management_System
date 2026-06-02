@@ -1,0 +1,180 @@
+"column_name","data_type","character_maximum_length","is_nullable","column_default"
+"id","integer",NULL,"NO","nextval('teacher_profile_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('departments_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('study_materials_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('ai_health_reports_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('classes_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('roles_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('users_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('fees_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('ai_reports_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('courses_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('leave_requests_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('timetable_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('student_profile_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('enrollment_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('notice_board_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('teacher_documents_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('attendance_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('teacher_leave_requests_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('grades_id_seq'::regclass)"
+"id","integer",NULL,"NO","nextval('student_documents_id_seq'::regclass)"
+"user_id","integer",NULL,"YES",NULL
+"teacher_id","integer",NULL,"NO",NULL
+"name","character varying",150,"NO",NULL
+"student_id","integer",NULL,"NO",NULL
+"user_id","integer",NULL,"NO",NULL
+"student_id","integer",NULL,"NO",NULL
+"author_id","integer",NULL,"NO",NULL
+"teacher_id","integer",NULL,"YES",NULL
+"student_id","integer",NULL,"NO",NULL
+"student_id","integer",NULL,"NO",NULL
+"class_id","integer",NULL,"NO",NULL
+"name","character varying",150,"NO",NULL
+"student_id","integer",NULL,"YES",NULL
+"teacher_id","integer",NULL,"NO",NULL
+"name","character varying",150,"NO",NULL
+"name","character varying",50,"NO",NULL
+"username","character varying",100,"NO",NULL
+"student_id","integer",NULL,"NO",NULL
+"student_id","integer",NULL,"NO",NULL
+"generated_at","timestamp with time zone",NULL,"NO","now()"
+"department_id","integer",NULL,"NO",NULL
+"title","character varying",200,"NO",NULL
+"amount","double precision",NULL,"NO",NULL
+"code","character varying",20,"NO",NULL
+"course_id","integer",NULL,"NO",NULL
+"doc_type","character varying",50,"YES",NULL
+"course_id","integer",NULL,"NO",NULL
+"teacher_id","integer",NULL,"NO",NULL
+"doc_type","character varying",50,"YES",NULL
+"admin_id","integer",NULL,"NO",NULL
+"teacher_id","integer",NULL,"NO",NULL
+"course_id","integer",NULL,"NO",NULL
+"semester","integer",NULL,"NO",NULL
+"email","character varying",255,"NO",NULL
+"department_id","integer",NULL,"YES",NULL
+"department_id","integer",NULL,"NO",NULL
+"class_id","integer",NULL,"NO",NULL
+"course_id","integer",NULL,"NO",NULL
+"code","character varying",20,"NO",NULL
+"department_id","integer",NULL,"NO",NULL
+"content","text",NULL,"NO",NULL
+"class_id","integer",NULL,"NO",NULL
+"marks","double precision",NULL,"NO",NULL
+"full_name","character varying",150,"YES",NULL
+"year","integer",NULL,"NO",NULL
+"password_hash","character varying",255,"NO",NULL
+"file_name","character varying",255,"YES",NULL
+"file_name","character varying",255,"YES",NULL
+"reason","text",NULL,"NO",NULL
+"class_id","integer",NULL,"NO",NULL
+"reason","text",NULL,"NO",NULL
+"title","character varying",200,"NO",NULL
+"teacher_id","integer",NULL,"NO",NULL
+"fee_type","character varying",20,"NO",NULL
+"academic_year","character varying",20,"NO",NULL
+"semester","integer",NULL,"NO",NULL
+"target_role","character varying",50,"NO",NULL
+"credits","integer",NULL,"NO",NULL
+"status","character varying",20,"NO",NULL
+"gender","character varying",20,"YES",NULL
+"from_date","date",NULL,"NO",NULL
+"grade","character varying",2,"NO",NULL
+"roll_number","character varying",50,"NO",NULL
+"content","text",NULL,"NO",NULL
+"file_path","character varying",255,"YES",NULL
+"date","date",NULL,"NO",NULL
+"from_date","date",NULL,"NO",NULL
+"day","character varying",10,"NO",NULL
+"file_path","character varying",255,"YES",NULL
+"academic_year","character varying",20,"NO",NULL
+"semester","integer",NULL,"NO",NULL
+"role_id","integer",NULL,"NO",NULL
+"description","text",NULL,"YES",NULL
+"uploaded_at","timestamp with time zone",NULL,"YES","now()"
+"start_time","time without time zone",NULL,"NO",NULL
+"to_date","date",NULL,"NO",NULL
+"dob","date",NULL,"YES",NULL
+"class_id","integer",NULL,"YES",NULL
+"uploaded_at","timestamp with time zone",NULL,"YES","now()"
+"due_date","date",NULL,"NO",NULL
+"is_active","boolean",NULL,"NO",NULL
+"status","character varying",10,"NO",NULL
+"file_path","character varying",500,"NO",NULL
+"semester","integer",NULL,"NO",NULL
+"to_date","date",NULL,"NO",NULL
+"semester","integer",NULL,"NO",NULL
+"date_of_birth","date",NULL,"YES",NULL
+"narrative","text",NULL,"NO",NULL
+"flags","jsonb",NULL,"NO",NULL
+"academic_year","character varying",20,"NO",NULL
+"generated_by","character varying",30,"NO",NULL
+"paid_date","date",NULL,"YES",NULL
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"blood_group","character varying",10,"YES",NULL
+"marked_by","integer",NULL,"NO",NULL
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"status","character varying",20,"NO",NULL
+"end_time","time without time zone",NULL,"NO",NULL
+"status","character varying",20,"NO",NULL
+"file_type","character varying",20,"NO",NULL
+"employee_id","character varying",50,"YES",NULL
+"edited_narrative","text",NULL,"YES",NULL
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"designation","character varying",100,"YES",NULL
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"phone","character varying",20,"YES",NULL
+"room","character varying",50,"NO",NULL
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"risk_flags","jsonb",NULL,"YES","'[]'::jsonb"
+"file_size","integer",NULL,"YES",NULL
+"status","character varying",20,"NO","'draft'::character varying"
+"created_at","timestamp with time zone",NULL,"NO","now()"
+"address","character varying",300,"YES",NULL
+"employment_type","character varying",50,"YES",NULL
+"emergency_contact","character varying",100,"YES",NULL
+"highest_qualification","character varying",100,"YES",NULL
+"current_cgpa","numeric",NULL,"YES",NULL
+"profile_photo","character varying",300,"YES",NULL
+"phone","character varying",15,"YES",NULL
+"overall_attendance","numeric",NULL,"YES",NULL
+"alternate_phone","character varying",15,"YES",NULL
+"created_at","timestamp with time zone",NULL,"YES","now()"
+"first_name","character varying",75,"YES",NULL
+"profile_photo","character varying",255,"YES",NULL
+"last_name","character varying",75,"YES",NULL
+"approved_at","timestamp with time zone",NULL,"YES",NULL
+"signature","character varying",255,"YES",NULL
+"gender","character varying",20,"YES",NULL
+"nationality","character varying",50,"YES",NULL
+"personal_email","character varying",150,"YES",NULL
+"current_address","text",NULL,"YES",NULL
+"state","character varying",50,"YES",NULL
+"permanent_address","text",NULL,"YES",NULL
+"year_of_study","integer",NULL,"YES",NULL
+"batch_year","integer",NULL,"YES",NULL
+"emergency_contact_name","character varying",100,"YES",NULL
+"emergency_contact_rel","character varying",50,"YES",NULL
+"admission_date","date",NULL,"YES",NULL
+"hostel_status","character varying",20,"YES",NULL
+"emergency_contact_phone","character varying",15,"YES",NULL
+"personal_email","character varying",150,"YES",NULL
+"bank_name","character varying",100,"YES",NULL
+"account_number","character varying",30,"YES",NULL
+"current_address","text",NULL,"YES",NULL
+"ifsc_code","character varying",15,"YES",NULL
+"permanent_address","text",NULL,"YES",NULL
+"profile_completed_pct","integer",NULL,"YES","0"
+"parent_name","character varying",100,"YES",NULL
+"parent_relationship","character varying",50,"YES",NULL
+"last_edited_at","timestamp with time zone",NULL,"YES","now()"
+"parent_phone","character varying",15,"YES",NULL
+"emergency_contact_name","character varying",100,"YES",NULL
+"emergency_contact_rel","character varying",50,"YES",NULL
+"emergency_contact_phone","character varying",15,"YES",NULL
+"signature","character varying",255,"YES",NULL
+"profile_completed_pct","integer",NULL,"YES","0"
+"last_edited_at","timestamp with time zone",NULL,"YES","now()"

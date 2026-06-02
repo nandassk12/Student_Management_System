@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -23,27 +23,30 @@ export default function TeacherAttendance() {
   // Restrict date input to today or past
   const maxDate = format(new Date(), 'yyyy-MM-dd')
 
-  // ── Query: Fetch Classes ──────────────────────────────────────────────────────
-  const { data: classes = [], isLoading: isClassesLoading } = useQuery({
-    queryKey: ['teacherClasses'],
+  // ── Query: Fetch Teacher's Own Timetable Slots (for class/course dropdowns) ──
+  const { data: mySlots = [], isLoading: isSlotsLoading } = useQuery({
+    queryKey: ['teacherOwnSlots'],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('/classes', {
-        params: { limit: 100 }
-      })
+      const { data } = await axiosInstance.get('/timetable/teacher/me')
       return data
     }
   })
 
-  // ── Query: Fetch Courses ──────────────────────────────────────────────────────
-  const { data: courses = [], isLoading: isCoursesLoading } = useQuery({
-    queryKey: ['teacherCourses'],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get('/courses', {
-        params: { limit: 100 }
-      })
-      return data
-    }
-  })
+  // Derive unique classes from teacher's own assigned slots
+  const classes = useMemo(() => {
+    const seen = new Set()
+    return mySlots
+      .filter(s => s.class_ && !seen.has(s.class_.id) && seen.add(s.class_.id))
+      .map(s => s.class_)
+  }, [mySlots])
+
+  // Derive unique courses from teacher's own assigned slots
+  const courses = useMemo(() => {
+    const seen = new Set()
+    return mySlots
+      .filter(s => s.course && !seen.has(s.course.id) && seen.add(s.course.id))
+      .map(s => s.course)
+  }, [mySlots])
 
   // ── Query: Fetch Student Roster ──────────────────────────────────────────────
   const { data: roster = [], isLoading: isRosterLoading, error: rosterError } = useQuery({
@@ -104,7 +107,20 @@ export default function TeacherAttendance() {
   }, [roster, existingAttendance, selectedClass, selectedCourse, selectedDate])
 
   // ── Mutation: Save Attendance ──────────────────────────────────────────────
-  const [isSaving, setIsSaving] = useState(false)
+  const saveAttendanceMutation = useMutation({
+    mutationFn: async (payload) => {
+      const { data } = await axiosInstance.post('/attendance/bulk', payload)
+      return data
+    },
+    onSuccess: () => {
+      // Invalidate existing attendance query to trigger reload
+      queryClient.invalidateQueries({
+        queryKey: ['existingAttendance', selectedClass, selectedCourse, selectedDate]
+      })
+      // Also invalidate dashboard queries to update today's attendance count
+      queryClient.invalidateQueries({ queryKey: ['teacherDashboard'] })
+    }
+  })
 
   const handleSaveAttendance = async () => {
     const studentsToSubmit = roster.filter(
@@ -116,35 +132,23 @@ export default function TeacherAttendance() {
       return
     }
 
-    setIsSaving(true)
     const toastId = toast.loading(`Saving attendance for ${studentsToSubmit.length} students...`)
 
     try {
-      const promises = studentsToSubmit.map((item) => {
-        return axiosInstance.post('/attendance', {
+      await saveAttendanceMutation.mutateAsync({
+        class_id: Number(selectedClass),
+        course_id: Number(selectedCourse),
+        date: selectedDate,
+        records: studentsToSubmit.map((item) => ({
           student_id: item.student_id,
-          course_id: Number(selectedCourse),
-          class_id: Number(selectedClass),
-          date: selectedDate,
           status: selections[item.student_id]
-        })
+        }))
       })
 
-      await Promise.all(promises)
-      
       toast.success('Attendance saved successfully!', { id: toastId })
-      
-      // Invalidate existing attendance query to trigger reload
-      queryClient.invalidateQueries({
-        queryKey: ['existingAttendance', selectedClass, selectedCourse, selectedDate]
-      })
-      // Also invalidate dashboard queries to update today's attendance count
-      queryClient.invalidateQueries({ queryKey: ['teacherDashboard'] })
     } catch (err) {
-      const errorMsg = err.response?.data?.detail ?? 'Some attendance submissions failed.'
+      const errorMsg = err.response?.data?.detail ?? 'Failed to save attendance.'
       toast.error(typeof errorMsg === 'string' ? errorMsg : 'Failed to save attendance.', { id: toastId })
-    } finally {
-      setIsSaving(false)
     }
   }
 
@@ -248,7 +252,7 @@ export default function TeacherAttendance() {
               setSearchQuery('')
             }}
             className="input bg-white font-medium"
-            disabled={isClassesLoading}
+            disabled={isSlotsLoading}
           >
             <option value="">-- Choose Class --</option>
             {classes.map((cls) => (
@@ -266,7 +270,7 @@ export default function TeacherAttendance() {
             value={selectedCourse}
             onChange={(e) => setSelectedCourse(e.target.value)}
             className="input bg-white font-medium"
-            disabled={isCoursesLoading}
+            disabled={isSlotsLoading}
           >
             <option value="">-- Choose Course --</option>
             {courses.map((course) => (
@@ -514,10 +518,10 @@ export default function TeacherAttendance() {
               <button
                 type="button"
                 onClick={handleSaveAttendance}
-                disabled={isSaving || isRosterLoading || isAttendanceLoading || roster.length === 0}
+                disabled={saveAttendanceMutation.isPending || isRosterLoading || isAttendanceLoading || roster.length === 0}
                 className="btn-primary flex items-center gap-2"
               >
-                {isSaving ? (
+                {saveAttendanceMutation.isPending ? (
                   <>
                     <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
                     Saving...

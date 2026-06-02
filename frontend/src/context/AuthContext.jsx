@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
 
     if (!me) throw new Error('Failed to retrieve user profile after login.')
 
-    const role = me.role?.name ?? me.role
+    const role = (me.role?.name ?? me.role ?? '').toLowerCase()
     const redirectTo = ROLE_REDIRECT[role] ?? '/login'
 
     toast.success(`Welcome back, ${me.username}!`)
@@ -103,7 +103,7 @@ export function AuthProvider({ children }) {
 
   // ── Derived helpers ──────────────────────────────────────────────────────────
   const isAuthenticated = Boolean(user)
-  const userRole        = user?.role?.name ?? user?.role ?? null
+  const userRole        = (user?.role?.name ?? user?.role ?? null)?.toLowerCase()
 
   const hasRole = useCallback(
     (...roles) => roles.includes(userRole),

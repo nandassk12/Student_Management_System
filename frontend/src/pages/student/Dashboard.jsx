@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { format } from 'date-fns'
+import { CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import axiosInstance from '@api/axios.js'
-import { useAuth } from '@context/AuthContext.jsx'
 import StatCard from '@components/StatCard.jsx'
+import { useAuth } from '@context/AuthContext.jsx'
 
 export default function StudentDashboard() {
   const { user } = useAuth()
@@ -75,7 +75,7 @@ export default function StudentDashboard() {
       if (!semGrades[sem]) semGrades[sem] = []
       semGrades[sem].push(g.gpa_points)
     })
-    
+
     // Format into sorted array
     return Object.keys(semGrades)
       .map((sem) => {
@@ -105,9 +105,26 @@ export default function StudentDashboard() {
   const todayName = format(new Date(), 'EEEE') // e.g. "Wednesday"
 
   return (
-    <div className="space-y-8 page-enter">
+    <div className="space-y-8 page-enter relative z-0 min-h-screen">
+      {/* Fixed Plexus Background Watermark */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          right: 0,
+          left: '240px',
+          height: '500px',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' width='100%25' height='100%25'%3E%3Cg stroke='%231e3a5f' stroke-width='1' stroke-opacity='0.15' fill='%231e3a5f' fill-opacity='0.15'%3E%3Ccircle cx='100' cy='500' r='4'/%3E%3Ccircle cx='250' cy='450' r='3.5'/%3E%3Ccircle cx='400' cy='530' r='5'/%3E%3Ccircle cx='550' cy='480' r='4'/%3E%3Ccircle cx='700' cy='540' r='4.5'/%3E%3Ccircle cx='850' cy='460' r='3.5'/%3E%3Ccircle cx='1000' cy='510' r='4.5'/%3E%3Ccircle cx='1150' cy='450' r='3.5'/%3E%3Ccircle cx='1300' cy='520' r='5'/%3E%3Ccircle cx='180' cy='400' r='3'/%3E%3Ccircle cx='320' cy='380' r='4'/%3E%3Ccircle cx='480' cy='420' r='3.5'/%3E%3Ccircle cx='620' cy='390' r='4.5'/%3E%3Ccircle cx='780' cy='410' r='3'/%3E%3Ccircle cx='920' cy='370' r='4'/%3E%3Ccircle cx='1080' cy='430' r='3.5'/%3E%3Ccircle cx='1220' cy='380' r='3'/%3E%3Cline x1='100' y1='500' x2='250' y2='450'/%3E%3Cline x1='100' y1='500' x2='180' y2='400'/%3E%3Cline x1='250' y1='450' x2='400' y2='530'/%3E%3Cline x1='250' y1='450' x2='320' y2='380'/%3E%3Cline x1='180' y1='400' x2='320' y2='380'/%3E%3Cline x1='400' y1='530' x2='550' y2='480'/%3E%3Cline x1='400' y1='530' x2='480' y2='420'/%3E%3Cline x1='320' y1='380' x2='480' y2='420'/%3E%3Cline x1='550' y1='480' x2='700' y2='540'/%3E%3Cline x1='550' y1='480' x2='620' y2='390'/%3E%3Cline x1='480' y1='420' x2='620' y2='390'/%3E%3Cline x1='700' y1='540' x2='850' y2='460'/%3E%3Cline x1='700' y1='540' x2='780' y2='410'/%3E%3Cline x1='620' y1='390' x2='780' y2='410'/%3E%3Cline x1='850' y1='460' x2='1000' y2='510'/%3E%3Cline x1='850' y1='460' x2='920' y2='370'/%3E%3Cline x1='780' y1='410' x2='920' y2='370'/%3E%3Cline x1='1000' y1='510' x2='1150' y2='450'/%3E%3Cline x1='1000' y1='510' x2='1080' y2='430'/%3E%3Cline x1='920' y1='370'/%3E%3Cline x1='1080' y1='430'/%3E%3Cline x1='1150' y1='450' x2='1300' y2='520'/%3E%3Cline x1='1150' y1='450' x2='1220' y2='380'/%3E%3Cline x1='1080' y1='430'/%3E%3Cline x1='1220' y1='380'/%3E%3Cline x1='1220' y1='380' x2='1300' y2='520'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundPosition: 'bottom',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100% auto',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
+
       {/* Welcome Header */}
-      <div>
+      <div className="relative z-10">
         <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
           Welcome back, {user?.username}!
         </h1>
@@ -116,11 +133,11 @@ export default function StudentDashboard() {
 
       {/* Analytics Stat Cards Grid */}
       {dashboardError ? (
-        <div className="p-6 text-center card bg-white text-status-red font-semibold">
+        <div className="p-6 text-center card bg-white text-status-red font-semibold relative z-10">
           Error loading dashboard stats: {dashboardError.message}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
           <StatCard
             label="Attendance Rate"
             value={overallAttendance}
@@ -156,8 +173,8 @@ export default function StudentDashboard() {
       )}
 
       {/* Split Charts and Agenda Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+
         {/* Attendance Donut (Left-ish) */}
         <div className="lg:col-span-4 flex flex-col">
           <div className="card bg-white p-6 space-y-6 flex-1 flex flex-col justify-between">
@@ -181,8 +198,8 @@ export default function StudentDashboard() {
                     <Cell fill="#1e3a5f" />
                     <Cell fill="#e2e8f0" />
                   </Pie>
-                  <Tooltip 
-                    formatter={(value) => [`${value}%`, 'Percentage']} 
+                  <Tooltip
+                    formatter={(value) => [`${value}%`, 'Percentage']}
                     contentStyle={{ fontSize: '11px', borderRadius: '8px' }}
                   />
                 </PieChart>
@@ -230,30 +247,30 @@ export default function StudentDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={gpaTrend} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis 
-                      dataKey="name" 
-                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }} 
-                      axisLine={false} 
-                      tickLine={false} 
+                    <XAxis
+                      dataKey="name"
+                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
+                      axisLine={false}
+                      tickLine={false}
                     />
-                    <YAxis 
-                      domain={[0, 4.0]} 
+                    <YAxis
+                      domain={[0, 4.0]}
                       ticks={[0, 1.0, 2.0, 3.0, 4.0]}
                       tick={{ fill: '#64748b', fontSize: 10, fontWeight: 600 }}
-                      axisLine={false} 
-                      tickLine={false} 
+                      axisLine={false}
+                      tickLine={false}
                     />
-                    <Tooltip 
-                      formatter={(value) => [`${value} / 4.0`, 'Semester GPA']} 
+                    <Tooltip
+                      formatter={(value) => [`${value} / 4.0`, 'Semester GPA']}
                       contentStyle={{ fontSize: '11px', borderRadius: '8px' }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="gpa" 
-                      stroke="#1e3a5f" 
-                      strokeWidth={3} 
+                    <Line
+                      type="monotone"
+                      dataKey="gpa"
+                      stroke="#1e3a5f"
+                      strokeWidth={3}
                       dot={{ r: 4, fill: '#1e3a5f', strokeWidth: 1 }}
-                      activeDot={{ r: 6 }} 
+                      activeDot={{ r: 6 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -289,7 +306,7 @@ export default function StudentDashboard() {
             ) : (
               <div className="space-y-3 flex-1 overflow-y-auto max-h-56 mt-4 pr-1 scrollbar-thin">
                 {dashboard.today_timetable.map((slot) => (
-                  <div 
+                  <div
                     key={slot.id}
                     className="p-3 rounded-lg border border-card-border bg-white hover:border-primary/30 transition-all duration-150 flex items-start gap-2.5 justify-between"
                   >
@@ -301,10 +318,10 @@ export default function StudentDashboard() {
                         {slot.course?.name}
                       </h4>
                       <p className="text-[10px] text-text-muted mt-0.5 truncate flex items-center gap-1 font-medium">
-                        <span>🚪 {slot.room}</span> | <span>👤 {slot.teacher?.full_name || slot.teacher?.username}</span>
+                        <span> {slot.room}</span> | <span> {slot.teacher?.full_name || slot.teacher?.username}</span>
                       </p>
                     </div>
-                    
+
                     <span className="text-[9px] font-bold text-text-secondary bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap">
                       {formatTime(slot.start_time)}
                     </span>

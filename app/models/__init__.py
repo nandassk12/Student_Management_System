@@ -12,8 +12,11 @@ from app.models.user import User
 from app.models.department import Department
 from app.models.course import Course
 from app.models.class_ import Class_
-from app.models.student_profile import StudentProfile
+from app.models.student_profile import StudentProfile, StudentDocument
 from app.models.enrollment import Enrollment
+
+# ── Teacher Models ────────────────────────────────
+from app.models.teacher_profile import TeacherProfile, TeacherDocument
 
 # ── Sprint 2 ──────────────────────────────────────
 from app.models.attendance import Attendance
@@ -24,9 +27,13 @@ from app.models.timetable import Timetable
 from app.models.fee import Fee
 from app.models.leave import LeaveRequest
 from app.models.notice import Notice
+from app.models.teacher_leave import TeacherLeaveRequest
 
 # ── Sprint 4 ──────────────────────────────────────
 from app.models.material import StudyMaterial
+
+# ── Sprint 5 / AI Reports ────────────────────────
+from app.models.model_aireport import AiReport
 
 __all__ = [
     # Sprint 1
@@ -36,7 +43,11 @@ __all__ = [
     "Course",
     "Class_",
     "StudentProfile",
+    "StudentDocument",
     "Enrollment",
+    # Teacher Models
+    "TeacherProfile",
+    "TeacherDocument",
     # Sprint 2
     "Attendance",
     "Grade",
@@ -45,6 +56,10 @@ __all__ = [
     "Fee",
     "LeaveRequest",
     "Notice",
+    "TeacherLeaveRequest",
     # Sprint 4
     "StudyMaterial",
+    # Sprint 5
+    "AiReport",
 ]
+

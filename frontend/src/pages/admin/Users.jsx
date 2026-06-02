@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -25,6 +26,12 @@ export default function AdminUsers() {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [deactivatingUser, setDeactivatingUser] = useState(null)
+
+  // CSV Import States
+  const [isImportOpen, setIsImportOpen] = useState(false)
+  const [importFile, setImportFile] = useState(null)
+  const [isImporting, setIsImporting] = useState(false)
+  const [importResult, setImportResult] = useState(null)
 
   // React Hook Form for Create/Edit
   const {
@@ -153,6 +160,42 @@ export default function AdminUsers() {
     deactivateUserMutation.mutate(deactivatingUser.id)
   }
 
+  const handleImportSubmit = async (e) => {
+    e.preventDefault()
+    if (!importFile) {
+      toast.error('Please select a CSV file first.')
+      return
+    }
+
+    setIsImporting(true)
+    setImportResult(null)
+
+    const formData = new FormData()
+    formData.append('file', importFile)
+
+    try {
+      const { data } = await axiosInstance.post(`/users/import`, formData, {
+        params: { role: roleFilter },
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      setImportResult(data)
+      if (data.created > 0) {
+        queryClient.invalidateQueries({ queryKey: ['users'] })
+        toast.success(`Successfully imported ${data.created} ${roleFilter}s!`)
+      } else {
+        toast.error('No new users were imported.')
+      }
+    } catch (err) {
+      const detail = err.response?.data?.detail ?? 'Failed to import CSV file.'
+      toast.error(typeof detail === 'string' ? detail : 'Invalid CSV structure or values.')
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
   // Columns for the users table
   const columns = [
     { key: 'id', label: 'ID', sortable: true, width: '80px', muted: true },
@@ -176,8 +219,18 @@ export default function AdminUsers() {
       align: 'right',
       render: (_, row) => {
         const isSelf = row.id === currentUser?.id
+        const hasDocs = row.role?.name && (row.role.name.toLowerCase() === 'student' || row.role.name.toLowerCase() === 'teacher')
         return (
           <div className="flex gap-2 justify-end">
+            {hasDocs && (
+              <Link
+                to={`/admin/users/${row.id}/documents`}
+                className="btn-secondary py-1 px-3 text-xs flex items-center gap-1"
+                title="View compliance documents"
+              >
+                View Documents
+              </Link>
+            )}
             <button
               onClick={() => onEditClick(row)}
               className="btn-secondary py-1 px-3 text-xs flex items-center gap-1"
@@ -207,18 +260,36 @@ export default function AdminUsers() {
           <p className="text-sm text-text-muted mt-1">Create, update, and manage portal accounts and security roles.</p>
         </div>
 
-        <button
-          onClick={() => {
-            setIsCreateOpen(true)
-            resetCreate()
-          }}
-          className="btn-primary flex items-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          Add User
-        </button>
+        <div className="flex items-center gap-2">
+          {(roleFilter === 'student' || roleFilter === 'teacher') && (
+            <button
+              onClick={() => {
+                setImportFile(null)
+                setImportResult(null)
+                setIsImportOpen(true)
+              }}
+              className="btn-primary py-1.5 px-3.5 text-xs flex items-center gap-1.5"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Import CSV
+            </button>
+          )}
+
+          <button
+            onClick={() => {
+              setIsCreateOpen(true)
+              resetCreate()
+            }}
+            className="btn-primary py-1.5 px-3.5 text-xs flex items-center gap-1.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add User
+          </button>
+        </div>
       </div>
 
       {/* Role Filter Toolbar */}
@@ -499,6 +570,131 @@ export default function AdminUsers() {
         danger
         loading={deactivateUserMutation.isPending}
       />
+
+      {/* ── BULK CSV IMPORT MODAL ── */}
+      <Modal
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        title={`Bulk Import ${roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}s`}
+        description={`Import multiple ${roleFilter}s at once from a CSV spreadsheet file.`}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setIsImportOpen(false)}
+              className="btn-secondary"
+              disabled={isImporting}
+            >
+              Close
+            </button>
+            {!importResult && (
+              <button
+                type="submit"
+                form="import-csv-form"
+                className="btn-primary"
+                disabled={isImporting || !importFile}
+              >
+                {isImporting ? 'Importing...' : 'Upload & Import'}
+              </button>
+            )}
+          </>
+        }
+      >
+        {!importResult ? (
+          <form id="import-csv-form" onSubmit={handleImportSubmit} className="space-y-4">
+            <div className="bg-slate-50 border border-card-border p-3.5 rounded-lg text-xs space-y-2">
+              <p className="font-bold text-text-primary">CSV Template Columns Required:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {roleFilter === 'student' ? (
+                  <>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">username</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">email</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">password</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">department_code</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">class_name</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">roll_number</code>
+                  </>
+                ) : (
+                  <>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">username</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">email</code>
+                    <code className="bg-slate-200/80 text-text-primary px-1.5 py-0.5 rounded font-mono font-semibold">password</code>
+                  </>
+                )}
+              </div>
+              <p className="text-text-muted mt-1 leading-relaxed">
+                Ensure headers match precisely. Duplicates (by username or email) already in the database will be skipped automatically.
+              </p>
+            </div>
+
+            {/* File drop zone */}
+            <div className="border-2 border-dashed border-card-border hover:border-primary/50 transition-colors rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/50 hover:bg-slate-50 relative group">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => setImportFile(e.target.files[0])}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isImporting}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-text-muted group-hover:text-primary transition-colors mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span className="text-xs font-semibold text-text-primary max-w-xs text-center truncate">
+                {importFile ? importFile.name : 'Click to choose file or drag and drop'}
+              </span>
+              <span className="text-[10px] text-text-muted mt-1">
+                {importFile ? `${(importFile.size / 1024).toFixed(1)} KB` : 'CSV spreadsheet files only'}
+              </span>
+            </div>
+          </form>
+        ) : (
+          <div className="space-y-4">
+            <div className="p-4 rounded-xl bg-slate-50 border border-card-border grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Imported</p>
+                <p className="text-2xl font-extrabold text-status-green mt-0.5">{importResult.created}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Skipped</p>
+                <p className="text-2xl font-extrabold text-status-amber mt-0.5">{importResult.skipped}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Errors</p>
+                <p className="text-2xl font-extrabold text-status-red mt-0.5">{importResult.errors?.length || 0}</p>
+              </div>
+            </div>
+
+            {importResult.errors && importResult.errors.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-status-red flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Errors Encountered
+                </label>
+                <div className="max-h-40 overflow-y-auto border border-red-100 bg-red-50/20 rounded-lg p-3 divide-y divide-red-50/50 text-xs font-sans">
+                  {importResult.errors.map((err, idx) => (
+                    <div key={idx} className="py-1.5 flex justify-between gap-4 text-status-red font-medium">
+                      <span className="flex-shrink-0 font-semibold">Row {err.row}:</span>
+                      <span className="text-right">{err.reason}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                setImportResult(null)
+                setImportFile(null)
+              }}
+              className="btn-secondary text-xs font-semibold py-2 px-3"
+            >
+              Upload Another File
+            </button>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }

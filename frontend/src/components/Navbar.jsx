@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext.jsx'
+import NotificationDropdown from '@components/NotificationDropdown.jsx'
 
 // ─── Route label map ──────────────────────────────────────────────────────────
 const ROUTE_LABELS = {
@@ -50,12 +51,7 @@ const ROLE_COLORS = {
   student: { bg: '#fef9c3', color: '#854d0e' },
 }
 
-// ─── Bell icon ────────────────────────────────────────────────────────────────
-const BellIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-  </svg>
-)
+
 
 // ─── Logout icon ─────────────────────────────────────────────────────────────
 const LogoutIcon = () => (
@@ -156,48 +152,7 @@ export default function Navbar() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
 
         {/* Notification bell */}
-        <button
-          id="navbar-notifications"
-          aria-label="Notifications"
-          style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: '#64748b',
-            position: 'relative',
-            transition: 'background 150ms, color 150ms',
-            flexShrink: 0,
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#f1f5f9'
-            e.currentTarget.style.color      = '#0f172a'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#f8fafc'
-            e.currentTarget.style.color      = '#64748b'
-          }}
-        >
-          <BellIcon />
-          {/* Unread dot */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              width: '7px',
-              height: '7px',
-              borderRadius: '50%',
-              background: '#dc2626',
-              border: '1.5px solid #ffffff',
-            }}
-          />
-        </button>
+        <NotificationDropdown />
 
         {/* Divider */}
         <div style={{ width: '1px', height: '28px', background: '#e2e8f0', flexShrink: 0 }} />

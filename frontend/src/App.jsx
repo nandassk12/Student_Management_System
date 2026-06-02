@@ -22,9 +22,12 @@ const AdminClasses        = lazy(() => import('@pages/admin/Classes.jsx'))
 const AdminEnrollments    = lazy(() => import('@pages/admin/Enrollments.jsx'))
 const AdminFees           = lazy(() => import('@pages/admin/Fees.jsx'))
 const AdminAttendance     = lazy(() => import('@pages/admin/Attendance.jsx'))
-const AdminReports        = lazy(() => import('@pages/admin/Reports.jsx'))
+const AdminLogs           = lazy(() => import('@pages/admin/Logs.jsx'))
 const AdminNotice         = lazy(() => import('@pages/admin/Notice.jsx'))
 const AdminTimetable      = lazy(() => import('@pages/admin/Timetable.jsx'))
+const AdminLeave          = lazy(() => import('@pages/admin/Leave.jsx'))
+const AdminAiAnalytics    = lazy(() => import('@pages/admin/AiAdmin.jsx'))
+const AdminUserDocuments  = lazy(() => import('@pages/admin/UserDocuments.jsx'))
 
 // Teacher
 const TeacherDashboard    = lazy(() => import('@pages/teacher/Dashboard.jsx'))
@@ -37,6 +40,8 @@ const TeacherMaterial     = lazy(() => import('@pages/teacher/Material.jsx'))
 const TeacherLeave        = lazy(() => import('@pages/teacher/Leave.jsx'))
 const TeacherNotice       = lazy(() => import('@pages/teacher/Notice.jsx'))
 const TeacherTimetable    = lazy(() => import('@pages/teacher/Timetable.jsx'))
+const TeacherReports      = lazy(() => import('@pages/teacher/Reports.jsx'))
+
 
 // Student
 const StudentDashboard    = lazy(() => import('@pages/student/Dashboard.jsx'))
@@ -46,11 +51,13 @@ const StudentGrades       = lazy(() => import('@pages/student/Grades.jsx'))
 const StudentFees         = lazy(() => import('@pages/student/Fees.jsx'))
 const StudentProfile      = lazy(() => import('@pages/student/Profile.jsx'))
 const StudentAttendancePredictor = lazy(() => import('@pages/student/AttendancePredictor.jsx'))
-const StudentGpaWhatIf    = lazy(() => import('@pages/student/GpaWhatIf.jsx'))
+const StudentCgpaSimulator = lazy(() => import('@pages/student/CgpaSimulator.jsx'))
 const StudentTimetable    = lazy(() => import('@pages/student/Timetable.jsx'))
 const StudentMaterial     = lazy(() => import('@pages/student/Material.jsx'))
 const StudentLeave        = lazy(() => import('@pages/student/Leave.jsx'))
 const StudentNotice       = lazy(() => import('@pages/student/Notice.jsx'))
+const StudentReports      = lazy(() => import('@pages/student/Reports.jsx'))
+
 
 // Shared
 const NotFound = lazy(() => import('@pages/NotFound.jsx'))
@@ -86,9 +93,18 @@ export default function App() {
               <Route path="enrollments" element={<AdminEnrollments />} />
               <Route path="fees"        element={<AdminFees />} />
               <Route path="attendance"  element={<AdminAttendance />} />
-              <Route path="reports"     element={<AdminReports />} />
+              <Route path="logs"        element={<AdminLogs />} />
               <Route path="notice"      element={<AdminNotice />} />
               <Route path="timetable"   element={<AdminTimetable />} />
+              <Route path="leave"       element={<AdminLeave />} />
+              <Route path="users/:user_id/documents" element={<AdminUserDocuments />} />
+
+              {/* AI Analytics — sub-tab routing */}
+              <Route path="ai"          element={<AdminAiAnalytics activeTab="health" />} />
+              <Route path="ai/health"   element={<AdminAiAnalytics activeTab="health" />} />
+              <Route path="ai/departments" element={<AdminAiAnalytics activeTab="departments" />} />
+              <Route path="ai/teachers" element={<AdminAiAnalytics activeTab="teachers" />} />
+
             </Route>
           </Route>
         </Route>
@@ -110,6 +126,7 @@ export default function App() {
               <Route path="leave"      element={<TeacherLeave />} />
               <Route path="notice"     element={<TeacherNotice />} />
               <Route path="timetable"  element={<TeacherTimetable />} />
+              <Route path="reports"    element={<TeacherReports />} />
             </Route>
           </Route>
         </Route>
@@ -128,11 +145,12 @@ export default function App() {
               <Route path="fees"       element={<StudentFees />} />
               <Route path="profile"    element={<StudentProfile />} />
               <Route path="predictor"  element={<StudentAttendancePredictor />} />
-              <Route path="gpa-whatif" element={<StudentGpaWhatIf />} />
+              <Route path="gpa-whatif" element={<StudentCgpaSimulator />} />
               <Route path="timetable"  element={<StudentTimetable />} />
               <Route path="material"   element={<StudentMaterial />} />
               <Route path="leave"      element={<StudentLeave />} />
               <Route path="notice"     element={<StudentNotice />} />
+              <Route path="reports"    element={<StudentReports />} />
             </Route>
           </Route>
         </Route>

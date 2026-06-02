@@ -81,21 +81,19 @@ export default function StudentTimetable() {
             const isToday = day === todayName
 
             return (
-              <div 
-                key={day} 
-                className={`flex flex-col space-y-4 rounded-xl transition-all duration-200 ${
-                  isToday 
-                    ? 'p-2 bg-navy-50/20 border border-primary/20 shadow-[0_4px_16px_rgba(30,58,95,0.06)]' 
-                    : ''
-                }`}
+              <div
+                key={day}
+                className={`flex flex-col space-y-4 rounded-xl transition-all duration-200 ${isToday
+                  ? 'p-2 bg-navy-50/20 border border-primary/20 shadow-[0_4px_16px_rgba(30,58,95,0.06)]'
+                  : ''
+                  }`}
               >
                 {/* Day Header */}
-                <div 
-                  className={`p-3 text-center font-bold text-xs uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center gap-1.5 ${
-                    isToday 
-                      ? 'bg-primary text-white scale-[1.02]' 
-                      : 'bg-white text-text-secondary border border-card-border'
-                  }`}
+                <div
+                  className={`p-3 text-center font-bold text-xs uppercase tracking-wider rounded-lg shadow-sm flex items-center justify-center gap-1.5 ${isToday
+                    ? 'bg-primary text-white scale-[1.02]'
+                    : 'bg-white text-text-secondary border border-card-border'
+                    }`}
                 >
                   {isToday && <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping" />}
                   <span>{day}</span>
@@ -110,11 +108,10 @@ export default function StudentTimetable() {
                     </div>
                   ) : (
                     daySlots.map((slot) => (
-                      <div 
+                      <div
                         key={slot.id}
-                        className={`p-3.5 rounded-xl border bg-white hover:shadow-card transition-all duration-200 flex flex-col justify-between space-y-3 ${
-                          isToday ? 'border-primary/30 hover:border-primary/50' : 'border-card-border hover:border-slate-300'
-                        }`}
+                        className={`p-3.5 rounded-xl border bg-white hover:shadow-card transition-all duration-200 flex flex-col justify-between space-y-3 ${isToday ? 'border-primary/30 hover:border-primary/50' : 'border-card-border hover:border-slate-300'
+                          }`}
                       >
                         <div>
                           {/* Course Code & Name */}
@@ -129,15 +126,15 @@ export default function StudentTimetable() {
                         {/* Room & Time info */}
                         <div className="space-y-1 text-[10px] text-text-secondary font-medium">
                           <div className="flex items-center gap-1.5 text-text-primary font-bold">
-                            <span>🕒</span>
+
                             <span>{formatTime(slot.start_time)} - {formatTime(slot.end_time)}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <span>🚪</span>
+
                             <span>{slot.room}</span>
                           </div>
                           <div className="flex items-center gap-1.5 truncate" title={slot.teacher?.full_name || slot.teacher?.username}>
-                            <span>👤</span>
+
                             <span>{slot.teacher?.full_name || slot.teacher?.username}</span>
                           </div>
                         </div>

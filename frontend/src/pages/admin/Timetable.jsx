@@ -1,5 +1,5 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
@@ -224,7 +224,7 @@ export default function AdminTimetable() {
                   <h3 className="text-sm font-extrabold text-primary border-b border-slate-100 pb-2 mb-2 tracking-tight">
                     {day}
                   </h3>
-                  
+
                   {daySlots.length === 0 ? (
                     <div className="flex-1 flex items-center justify-center py-12 text-center text-text-muted text-xs font-normal">
                       No Classes
@@ -258,13 +258,13 @@ export default function AdminTimetable() {
 
                           <div className="space-y-1 pt-1 text-[10px] text-text-secondary font-medium">
                             <p className="flex items-center gap-1">
-                              <span>⏰</span> {formatTimeDisplay(slot.start_time)} – {formatTimeDisplay(slot.end_time)}
+                              <span></span> {formatTimeDisplay(slot.start_time)} – {formatTimeDisplay(slot.end_time)}
                             </p>
                             <p className="flex items-center gap-1">
-                              <span>👤</span> {slot.teacher.username}
+                              <span></span> {slot.teacher.username}
                             </p>
                             <p className="flex items-center gap-1">
-                              <span>📍</span> {slot.room}
+                              <span></span> {slot.room}
                             </p>
                           </div>
                         </div>

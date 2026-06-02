@@ -66,7 +66,7 @@ def decode_token(token: str) -> TokenData:
         role_name: str | None = payload.get("role_name")
         if user_id is None or username is None or role_name is None:
             raise credentials_exc
-        return TokenData(user_id=user_id, username=username, role_name=role_name)
+        return TokenData(user_id=user_id, username=username, role_name=role_name.strip().lower())
     except JWTError:
         raise credentials_exc
 
@@ -104,7 +104,7 @@ async def require_admin(
     current_user: Annotated[TokenData, Depends(get_current_user)],
 ) -> TokenData:
     """Only admin role passes."""
-    if current_user.role_name != "admin":
+    if current_user.role_name.strip().lower() != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",
@@ -116,7 +116,7 @@ async def require_teacher(
     current_user: Annotated[TokenData, Depends(get_current_user)],
 ) -> TokenData:
     """Teacher and admin pass."""
-    if current_user.role_name not in ("teacher", "admin"):
+    if current_user.role_name.strip().lower() not in ("teacher", "admin"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Teacher or admin access required",
@@ -128,7 +128,7 @@ async def require_student(
     current_user: Annotated[TokenData, Depends(get_current_user)],
 ) -> TokenData:
     """Student, teacher, and admin all pass."""
-    if current_user.role_name not in ("student", "teacher", "admin"):
+    if current_user.role_name.strip().lower() not in ("student", "teacher", "admin"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Authentication required",

@@ -6,7 +6,7 @@ FastAPI application entry point.
   - Registers CORS middleware
   - Lifespan: creates DB tables + seeds default data on startup
 """
-
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -43,7 +43,11 @@ from app.api.material import router as material_router
 
 # Sprint 5
 from app.api.dashboard import router as dashboard_router
+from app.api.ai_reports import router as ai_reports_router
+from app.api.ai_admin import router as ai_admin_router
+from app.api.teacher_leave import router as teacher_leave_router
 from fastapi_cache import FastAPICache
+
 from fastapi_cache.backends.inmemory import InMemoryBackend
 
 
@@ -169,6 +173,9 @@ def create_app() -> FastAPI:
 
     # Sprint 5
     application.include_router(dashboard_router)
+    application.include_router(ai_reports_router)
+    application.include_router(teacher_leave_router)
+    application.include_router(ai_admin_router)
 
     return application
 
@@ -181,3 +188,6 @@ app = create_app()
 @app.get("/health", tags=["Health"], summary="Health check endpoint")
 async def health() -> dict:
     return {"status": "ok", "service": "Student Management System API"}
+
+# Reload trigger comment to refresh Uvicorn cache and active logic. (Roles case-insensitivity fix)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

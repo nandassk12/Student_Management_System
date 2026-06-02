@@ -25,6 +25,7 @@ from app.models.enrollment import Enrollment
 from app.models.fee import Fee
 from app.models.grade import Grade
 from app.models.leave import LeaveRequest
+from app.models.teacher_leave import TeacherLeaveRequest
 from app.models.material import StudyMaterial
 from app.models.role import Role
 from app.models.student_profile import StudentProfile
@@ -122,9 +123,9 @@ async def get_admin_dashboard(
     )
     total_pending_fees = float(fees_pending_res.scalar() or 0.0)
 
-    # 3. Pending leave requests count
+    # 3. Pending leave requests count (teacher→admin only, matching the Admin Leave page)
     pending_leaves_res = await db.execute(
-        select(func.count(LeaveRequest.id)).where(LeaveRequest.status == "pending")
+        select(func.count(TeacherLeaveRequest.id)).where(TeacherLeaveRequest.status == "pending")
     )
     pending_leave_requests_count = pending_leaves_res.scalar() or 0
 

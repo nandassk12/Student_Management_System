@@ -24,4 +24,6 @@ email-validator==2.1.1
 # ── Sprint 5 Additions ──────────────────────────────
 slowapi==0.1.9
 fastapi-cache2==0.2.1
+reportlab==4.5.1
+
 

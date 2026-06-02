@@ -5,6 +5,7 @@ Timetable router:
   POST   /timetable                   → admin creates slot
   GET    /timetable/class/{class_id}  → all roles view class schedule
   GET    /timetable/me                → student views own timetable
+  GET    /timetable/teacher/me        → teacher views own assigned slots
   DELETE /timetable/{id}              → admin only
 """
 
@@ -14,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth.auth import get_current_user, require_admin
+from app.auth.auth import get_current_user, require_admin, require_teacher
 from app.database import get_db
 from app.models.class_ import Class_
 from app.models.course import Course
@@ -192,6 +193,33 @@ async def get_my_timetable(
         query = query.where(Timetable.day == day.strip().capitalize())
 
     result = await db.execute(query.offset(skip).limit(limit))
+    slots = result.scalars().all()
+
+    day_order = {
+        "Monday": 1, "Tuesday": 2, "Wednesday": 3,
+        "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7,
+    }
+    slots_sorted = sorted(
+        slots,
+        key=lambda s: (day_order.get(s.day, 99), s.start_time),
+    )
+    return [TimetableOut.model_validate(s) for s in slots_sorted]
+
+
+@router.get(
+    "/teacher/me",
+    response_model=list[TimetableOut],
+    status_code=status.HTTP_200_OK,
+    summary="Teacher views their own assigned timetable slots",
+)
+async def get_teacher_timetable(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(require_teacher)],
+) -> list[TimetableOut]:
+    """Returns all timetable slots where this teacher is the assigned instructor."""
+    result = await db.execute(
+        select(Timetable).where(Timetable.teacher_id == current_user.user_id)
+    )
     slots = result.scalars().all()
 
     day_order = {

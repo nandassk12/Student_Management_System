@@ -384,7 +384,7 @@ export default function TeacherGrades() {
                         <td className="p-4 text-center">
                           {gradeRecord ? (
                             <span className="text-xs font-semibold text-text-secondary">
-                              {gradeRecord.gpa_points.toFixed(1)} / 4.0
+                              {gradeRecord.gpa_points != null ? gradeRecord.gpa_points.toFixed(1) : '—'} / 4.0
                             </span>
                           ) : (
                             <span className="text-xs text-text-muted">—</span>

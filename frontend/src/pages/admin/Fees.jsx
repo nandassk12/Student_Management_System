@@ -265,7 +265,7 @@ export default function AdminFees() {
                 onClick={() => setPayingFee(row)}
                 className="py-1 px-3 text-xs bg-emerald-50 text-status-green border border-emerald-200 hover:bg-status-green hover:text-white rounded-md font-semibold transition-all duration-150"
               >
-                Pay
+                Record
               </button>
             )}
             <button

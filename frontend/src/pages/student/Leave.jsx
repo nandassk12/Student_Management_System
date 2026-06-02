@@ -37,6 +37,15 @@ export default function StudentLeave() {
     return list
   }, [timetableSlots])
 
+  // ── Query: Fetch Leave Balance ──────────────────────────────────────────────
+  const { data: balance = { total_allowed: 15, used: 0, remaining: 15, semester: 1 }, isLoading: isBalanceLoading } = useQuery({
+    queryKey: ['studentLeaveBalance'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/leave/balance')
+      return data
+    }
+  })
+
   // ── Query: Fetch My Submitted Leaves ──────────────────────────────────────────
   const { data: leaves = [], isLoading: isLeavesLoading } = useQuery({
     queryKey: ['studentMyLeaves'],
@@ -64,6 +73,7 @@ export default function StudentLeave() {
       // Refresh list
       queryClient.invalidateQueries({ queryKey: ['studentMyLeaves'] })
       queryClient.invalidateQueries({ queryKey: ['studentDashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['studentLeaveBalance'] })
     },
     onError: (err) => {
       const errorMsg = err.response?.data?.detail ?? 'Failed to submit leave request.'
@@ -73,6 +83,11 @@ export default function StudentLeave() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    if (balance.remaining <= 0) {
+      toast.error('Cannot submit request: your leave balance is fully exhausted.')
+      return
+    }
 
     const finalTeacherId = teachers.length > 0 ? Number(teacherId) : Number(manualTeacherId)
 
@@ -114,6 +129,44 @@ export default function StudentLeave() {
         <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Leave Requests</h1>
         <p className="text-sm text-text-muted mt-1">Submit leave notifications to your instructors and track their review status.</p>
       </div>
+
+      {/* Leave Balance Card */}
+      {isBalanceLoading ? (
+        <div className="h-28 rounded-xl bg-slate-50 border border-slate-100 animate-pulse" />
+      ) : (
+        <div className="card bg-white p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border-l-4 border-l-primary">
+          <div className="space-y-1">
+            <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider">Leave Balance (Semester {balance.semester})</h3>
+            <p className="text-2xl font-black text-text-primary">
+              {balance.remaining} of {balance.total_allowed} leaves remaining
+            </p>
+            {balance.remaining < 3 && (
+              <p className="text-xs font-bold text-status-amber flex items-center gap-1 mt-1">
+                <span>⚠️</span> Warning: You have less than 3 leaves remaining for this semester.
+              </p>
+            )}
+          </div>
+          
+          <div className="w-full md:w-80 space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold">
+              <span className="text-text-muted">Usage Progress</span>
+              <span className="text-text-secondary">{Math.round((balance.used / balance.total_allowed) * 100)}%</span>
+            </div>
+            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200">
+              <div 
+                className={`h-full rounded-full transition-all duration-500 ${
+                  balance.remaining < 3 ? 'bg-status-amber' : 'bg-primary'
+                }`}
+                style={{ width: `${Math.min(100, (balance.used / balance.total_allowed) * 100)}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-text-muted font-medium">
+              <span>{balance.used} Leaves Used</span>
+              <span>{balance.remaining} Remaining</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Split Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -199,10 +252,10 @@ export default function StudentLeave() {
               {/* Action Button */}
               <button
                 type="submit"
-                disabled={createLeaveMutation.isPending}
-                className="btn-primary w-full py-2.5 flex items-center justify-center gap-2"
+                disabled={createLeaveMutation.isPending || balance.remaining <= 0}
+                className="btn-primary w-full py-2.5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {createLeaveMutation.isPending ? 'Submitting...' : 'Submit Request'}
+                {balance.remaining <= 0 ? 'Leave Balance Exhausted' : createLeaveMutation.isPending ? 'Submitting...' : 'Submit Request'}
               </button>
             </form>
           </div>

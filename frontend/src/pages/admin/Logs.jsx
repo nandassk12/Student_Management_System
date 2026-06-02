@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns'
 import axiosInstance from '@api/axios.js'
 import StatCard from '@components/StatCard.jsx'
 
-export default function AdminReports() {
+export default function AdminLogs() {
   // Fetch Admin Dashboard summary
   const { data: dashboard, isLoading: isDashLoading } = useQuery({
     queryKey: ['adminReportsDashboard'],
@@ -68,7 +68,7 @@ export default function AdminReports() {
   return (
     <div className="space-y-8 page-enter">
       <div>
-        <h1 className="text-2xl font-extrabold text-[#0f172a] tracking-tight">Academic & Finance Reports</h1>
+        <h1 className="text-2xl font-extrabold text-[#0f172a] tracking-tight">Academic & Finance Logs</h1>
         <p className="text-sm text-[#64748b] mt-1">Unified view of college performance, audit trails, and student tracking logs.</p>
       </div>
 

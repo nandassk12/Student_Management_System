@@ -10,6 +10,7 @@ Leave requests router:
   DELETE /leave/{id}                     → student deletes pending request, admin deletes any
 """
 
+import datetime
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -17,11 +18,12 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.auth import get_current_user, require_admin, require_teacher
+from app.config import settings
 from app.database import get_db
 from app.models.leave import LeaveRequest
 from app.models.user import User
 from app.schemas.auth import TokenData
-from app.schemas.leave import LeaveCreate, LeaveOut, LeaveReview
+from app.schemas.leave import LeaveCreate, LeaveOut, LeaveReview, LeaveBalanceOut
 
 router = APIRouter(prefix="/leave", tags=["Leave Requests"])
 
@@ -138,6 +140,68 @@ async def get_my_leaves(
     result = await db.execute(query)
     leaves = result.scalars().all()
     return [LeaveOut.model_validate(l) for l in leaves]
+
+
+def get_current_semester_date_bounds() -> tuple[datetime.date, datetime.date]:
+    today = datetime.date.today()
+    if today.month <= 6:
+        # Spring semester: Jan 1 to Jun 30
+        return datetime.date(today.year, 1, 1), datetime.date(today.year, 6, 30)
+    else:
+        # Fall semester: Jul 1 to Dec 31
+        return datetime.date(today.year, 7, 1), datetime.date(today.year, 12, 31)
+
+
+@router.get(
+    "/balance",
+    response_model=LeaveBalanceOut,
+    status_code=status.HTTP_200_OK,
+    summary="Get leave balance for student (student only)",
+)
+async def get_leave_balance(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+) -> LeaveBalanceOut:
+    if current_user.role_name != "student":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only students have a leave balance"
+        )
+
+    # Fetch user to access student profile and current semester
+    user_stmt = select(User).where(User.id == current_user.user_id)
+    user_res = await db.execute(user_stmt)
+    user = user_res.scalar_one_or_none()
+    
+    if not user or not user.student_profile or not user.student_profile.class_:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Student profile or class enrollment not found"
+        )
+
+    current_semester = user.student_profile.class_.semester
+    start_date, end_date = get_current_semester_date_bounds()
+
+    # Sum of duration of approved leaves for this student in current semester
+    stmt = select(LeaveRequest).where(
+        LeaveRequest.student_id == current_user.user_id,
+        LeaveRequest.status == "approved",
+        LeaveRequest.from_date >= start_date,
+        LeaveRequest.from_date <= end_date
+    )
+    result = await db.execute(stmt)
+    leaves = result.scalars().all()
+    
+    used = sum(l.duration_days for l in leaves)
+    total_allowed = settings.TOTAL_ALLOWED_LEAVES
+    remaining = max(0, total_allowed - used)
+
+    return LeaveBalanceOut(
+        total_allowed=total_allowed,
+        used=used,
+        remaining=remaining,
+        semester=current_semester
+    )
 
 
 @router.get(

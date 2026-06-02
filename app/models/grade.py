@@ -14,7 +14,10 @@ from app.database import Base
 
 # Valid letter grades and their GPA equivalents (4.0 scale)
 GRADE_GPA_MAP: dict[str, float] = {
+    "O": 4.0,
+    "A+": 4.0,
     "A": 4.0,
+    "B+": 3.0,
     "B": 3.0,
     "C": 2.0,
     "D": 1.0,

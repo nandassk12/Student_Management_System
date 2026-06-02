@@ -82,3 +82,38 @@ export const api = {
   patch:  (url, data, config) => axiosInstance.patch(url, data, config),
   delete: (url, config)       => axiosInstance.delete(url, config),
 }
+
+// Teacher profile
+export const getTeacherProfile        = ()           => api.get('/profile/teacher/me')
+export const updateTeacherProfile     = (data)       => api.put('/profile/teacher/me', data)
+export const uploadTeacherPhoto       = (formData)   => api.post('/profile/teacher/me/photo', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const uploadTeacherSignature   = (formData)   => api.post('/profile/teacher/me/signature', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const uploadTeacherDocument    = (formData)   => {
+  const docType = formData.get('doc_type')
+  return api.post(`/profile/teacher/me/documents?doc_type=${encodeURIComponent(docType)}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+}
+export const getTeacherDocuments      = ()           => api.get('/profile/teacher/me/documents')
+export const deleteTeacherDocument    = (docId)      => api.delete(`/profile/teacher/me/documents/${docId}`)
+export const downloadTeacherDocumentSelf = (docId)    => api.get(`/profile/teacher/me/documents/${docId}/download`, { responseType: 'blob' })
+
+// Student profile
+export const getStudentProfile        = ()           => api.get('/profile/student/me')
+export const updateStudentProfile     = (data)       => api.put('/profile/student/me', data)
+export const uploadStudentPhoto       = (formData)   => api.post('/profile/student/me/photo', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const uploadStudentSignature   = (formData)   => api.post('/profile/student/me/signature', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const uploadStudentDocument    = (formData)   => {
+  const docType = formData.get('doc_type')
+  return api.post(`/profile/student/me/documents?doc_type=${encodeURIComponent(docType)}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+}
+export const getStudentDocuments      = ()           => api.get('/profile/student/me/documents')
+export const deleteStudentDocument    = (docId)      => api.delete(`/profile/student/me/documents/${docId}`)
+export const downloadStudentDocumentSelf = (docId)    => api.get(`/profile/student/me/documents/${docId}/download`, { responseType: 'blob' })
+
+// Admin document access
+export const getAdminUserProfile      = (userId)     => api.get(`/admin/users/${userId}/profile`)
+export const getAdminUserDocuments    = (userId)     => api.get(`/admin/users/${userId}/documents`)
+export const downloadAdminUserDocument = (userId, docId) => api.get(`/admin/users/${userId}/documents/${docId}/download`, { responseType: 'blob' })
+
+// Security
+export const changePassword           = (data)       => api.post('/auth/change-password', data)
+

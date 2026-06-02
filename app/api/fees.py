@@ -13,11 +13,19 @@ Fees router:
 """
 
 import datetime
+import io
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
 
 from app.auth.auth import get_current_user, require_admin, require_teacher
 from app.database import get_db
@@ -267,3 +275,159 @@ async def pay_fee(
     await db.flush()
     await db.refresh(fee)
     return FeeOut.model_validate(fee)
+
+
+def generate_receipt_pdf(fee: Fee) -> io.BytesIO:
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=letter,
+        rightMargin=72,
+        leftMargin=72,
+        topMargin=72,
+        bottomMargin=72
+    )
+    
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'ReceiptTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        leading=28,
+        textColor=colors.HexColor("#1e3a5f"), # Accent color
+        alignment=1, # Center
+        spaceAfter=20
+    )
+    
+    normal_style = ParagraphStyle(
+        'ReceiptNormal',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=14,
+        textColor=colors.HexColor("#0f172a") # Primary text
+    )
+    
+    header_style = ParagraphStyle(
+        'ReceiptHeader',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=14,
+        fontName="Helvetica-Bold",
+        textColor=colors.HexColor("#ffffff")
+    )
+    
+    bold_style = ParagraphStyle(
+        'ReceiptBold',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=14,
+        fontName="Helvetica-Bold",
+        textColor=colors.HexColor("#0f172a")
+    )
+
+    story = []
+    
+    # Header Title
+    story.append(Paragraph("FEE PAYMENT RECEIPT", title_style))
+    story.append(Spacer(1, 15))
+    
+    # Metadata info (Receipt No, Date)
+    receipt_no = f"REC-{fee.id:06d}"
+    paid_date_str = fee.paid_date.strftime("%Y-%m-%d") if fee.paid_date else datetime.date.today().strftime("%Y-%m-%d")
+    
+    meta_data = [
+        [Paragraph(f"<b>Receipt Number:</b> {receipt_no}", normal_style), 
+         Paragraph(f"<b>Payment Date:</b> {paid_date_str}", normal_style)]
+    ]
+    meta_table = Table(meta_data, colWidths=[3.5*inch, 3*inch])
+    meta_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
+    ]))
+    story.append(meta_table)
+    story.append(Spacer(1, 15))
+    
+    # Student Info
+    student_name = fee.student.username.capitalize() if fee.student else "N/A"
+    student_email = fee.student.email if fee.student else "N/A"
+    
+    student_data = [
+        [Paragraph("<b>Student Name:</b>", bold_style), Paragraph(student_name, normal_style)],
+        [Paragraph("<b>Student Email:</b>", bold_style), Paragraph(student_email, normal_style)]
+    ]
+    student_table = Table(student_data, colWidths=[1.5*inch, 5*inch])
+    student_table.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+    ]))
+    story.append(student_table)
+    story.append(Spacer(1, 20))
+    
+    # Payment Details Table
+    table_data = [
+        [Paragraph("Fee Item Type", header_style), Paragraph("Payment Status", header_style), Paragraph("Paid Amount", header_style)],
+        [Paragraph(fee.fee_type.replace('_', ' ').capitalize(), normal_style), Paragraph(fee.status.upper(), normal_style), Paragraph(f"INR {fee.amount:.2f}", normal_style)]
+    ]
+    
+    details_table = Table(table_data, colWidths=[2.5*inch, 2*inch, 2*inch])
+    details_table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e3a5f")),
+        ('ALIGN', (0,0), (-1,-1), 'LEFT'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('TOPPADDING', (0,0), (-1,-1), 8),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor("#e2e8f0")),
+    ]))
+    
+    story.append(details_table)
+    story.append(Spacer(1, 30))
+    
+    # Footer Note
+    footer_style = ParagraphStyle(
+        'ReceiptFooter',
+        parent=styles['Italic'],
+        fontSize=8,
+        leading=10,
+        alignment=1,
+        textColor=colors.HexColor("#94a3b8")
+    )
+    story.append(Paragraph("This is an electronically generated receipt and does not require a physical signature.", footer_style))
+    
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+
+@router.get(
+    "/{fee_id}/receipt",
+    summary="Download receipt for a paid fee record",
+)
+async def get_fee_receipt(
+    fee_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+):
+    fee = await _get_fee_or_404(fee_id, db)
+
+    # Guard: Students can only access their own fees
+    if current_user.role_name == "student" and fee.student_id != current_user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied to this fee receipt"
+        )
+
+    # Ensure only paid fees can generate receipts
+    if fee.status != "paid":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Receipt can only be generated for paid fees"
+        )
+
+    buffer = generate_receipt_pdf(fee)
+    headers = {
+        'Content-Disposition': f'attachment; filename="receipt_{fee_id}.pdf"'
+    }
+    return StreamingResponse(buffer, media_type="application/pdf", headers=headers)
+

@@ -125,7 +125,7 @@ export default function StudentAttendance() {
                     
                     {/* Course Counts */}
                     <div className="flex items-center justify-between text-[10px] text-text-secondary font-bold pt-1">
-                      <span>Total: {item.total_classes} hrs</span>
+                      <span>Total: {item.total_classes} sessions</span>
                       <div className="flex gap-2">
                         <span className="text-status-green">P: {item.present_count}</span>
                         <span className="text-slate-500">L: {item.late_count}</span>

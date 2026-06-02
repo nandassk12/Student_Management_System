@@ -81,17 +81,37 @@ async def create_course(
     status_code=status.HTTP_200_OK,
     summary="List courses (any auth user), optionally filter by department",
 )
-@cache(expire=7200)
 async def list_courses(
     db: Annotated[AsyncSession, Depends(get_db)],
-    _: Annotated[TokenData, Depends(get_current_user)],
+    current_user: Annotated[TokenData, Depends(get_current_user)],
     department_id: int | None = Query(None, description="Filter by department ID"),
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
 ) -> list[CourseOut]:
-    query = select(Course)
-    if department_id is not None:
-        query = query.where(Course.department_id == department_id)
+    role = current_user.role_name.strip().lower()
+    if role == "student":
+        from app.models.enrollment import Enrollment
+        from app.models.timetable import Timetable
+        query = select(Course).join(
+            Timetable, Course.id == Timetable.course_id
+        ).join(
+            Enrollment, Enrollment.class_id == Timetable.class_id
+        ).where(Enrollment.student_id == current_user.user_id).distinct()
+        if department_id is not None:
+            query = query.where(Course.department_id == department_id)
+    elif role == "teacher":
+        from app.models.timetable import Timetable
+        query = select(Course).join(
+            Timetable, Course.id == Timetable.course_id
+        ).where(Timetable.teacher_id == current_user.user_id).distinct()
+        if department_id is not None:
+            query = query.where(Course.department_id == department_id)
+    else:
+        # Admin / others get global list
+        query = select(Course)
+        if department_id is not None:
+            query = query.where(Course.department_id == department_id)
+
     query = query.offset(skip).limit(limit)
     result = await db.execute(query)
     courses = result.scalars().all()

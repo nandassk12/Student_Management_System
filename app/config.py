@@ -23,5 +23,15 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # Leave Configuration
+    TOTAL_ALLOWED_LEAVES: int = 15
+
+    # OpenWebUI LLM Settings
+    OPENWEBUI_BASE_URL: str 
+    OPENWEBUI_API_KEY: str 
+    OPENWEBUI_MODEL: str 
+
+
+
 
 settings = Settings()

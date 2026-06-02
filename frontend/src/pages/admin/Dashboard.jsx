@@ -126,9 +126,26 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-8 page-enter">
+    <div className="space-y-8 page-enter relative z-0 min-h-screen">
+      {/* Fixed Plexus Background Watermark */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          right: 0,
+          left: '240px',
+          height: '500px',
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' width='100%25' height='100%25'%3E%3Cg stroke='%231e3a5f' stroke-width='1' stroke-opacity='0.15' fill='%231e3a5f' fill-opacity='0.15'%3E%3Ccircle cx='100' cy='500' r='4'/%3E%3Ccircle cx='250' cy='450' r='3.5'/%3E%3Ccircle cx='400' cy='530' r='5'/%3E%3Ccircle cx='550' cy='480' r='4'/%3E%3Ccircle cx='700' cy='540' r='4.5'/%3E%3Ccircle cx='850' cy='460' r='3.5'/%3E%3Ccircle cx='1000' cy='510' r='4.5'/%3E%3Ccircle cx='1150' cy='450' r='3.5'/%3E%3Ccircle cx='1300' cy='520' r='5'/%3E%3Ccircle cx='180' cy='400' r='3'/%3E%3Ccircle cx='320' cy='380' r='4'/%3E%3Ccircle cx='480' cy='420' r='3.5'/%3E%3Ccircle cx='620' cy='390' r='4.5'/%3E%3Ccircle cx='780' cy='410' r='3'/%3E%3Ccircle cx='920' cy='370' r='4'/%3E%3Ccircle cx='1080' cy='430' r='3.5'/%3E%3Ccircle cx='1220' cy='380' r='3'/%3E%3Cline x1='100' y1='500' x2='250' y2='450'/%3E%3Cline x1='100' y1='500' x2='180' y2='400'/%3E%3Cline x1='250' y1='450' x2='400' y2='530'/%3E%3Cline x1='250' y1='450' x2='320' y2='380'/%3E%3Cline x1='180' y1='400' x2='320' y2='380'/%3E%3Cline x1='400' y1='530' x2='550' y2='480'/%3E%3Cline x1='400' y1='530' x2='480' y2='420'/%3E%3Cline x1='320' y1='380' x2='480' y2='420'/%3E%3Cline x1='550' y1='480' x2='700' y2='540'/%3E%3Cline x1='550' y1='480' x2='620' y2='390'/%3E%3Cline x1='480' y1='420' x2='620' y2='390'/%3E%3Cline x1='700' y1='540' x2='850' y2='460'/%3E%3Cline x1='700' y1='540' x2='780' y2='410'/%3E%3Cline x1='620' y1='390' x2='780' y2='410'/%3E%3Cline x1='850' y1='460' x2='1000' y2='510'/%3E%3Cline x1='850' y1='460' x2='920' y2='370'/%3E%3Cline x1='780' y1='410' x2='920' y2='370'/%3E%3Cline x1='1000' y1='510' x2='1150' y2='450'/%3E%3Cline x1='1000' y1='510' x2='1080' y2='430'/%3E%3Cline x1='920' y1='370'/%3E%3Cline x1='1080' y1='430'/%3E%3Cline x1='1150' y1='450' x2='1300' y2='520'/%3E%3Cline x1='1150' y1='450' x2='1220' y2='380'/%3E%3Cline x1='1080' y1='430'/%3E%3Cline x1='1220' y1='380'/%3E%3Cline x1='1220' y1='380' x2='1300' y2='520'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundPosition: 'bottom',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '100% auto',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
+
       {/* ── Page Header ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between relative z-10">
         <div>
           <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Admin Dashboard</h1>
           <p className="text-sm text-text-muted mt-1">Real-time overview of college analytics and performance.</p>
@@ -154,7 +171,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Stat Cards Grid ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
         <StatCard
           label="Total Students"
           value={data?.total_students}
@@ -188,7 +205,7 @@ export default function AdminDashboard() {
           loading={isLoading}
         />
         <StatCard
-          label="Pending Leaves"
+          label="Pending Teacher Leaves"
           value={data?.pending_leave_requests_count}
           icon={Icons.leaves}
           color="#d97706"
@@ -204,7 +221,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Bottom Section: Charts & Quick Links ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
         {/* Left Column: Fees Chart */}
         <div className="lg:col-span-2 card bg-white p-6 flex flex-col justify-between">
           <div>

@@ -1,13 +1,69 @@
+# ── Environment & Secrets ─────────────────────────────────────────────────────
 .env
+.env.*
+!.env.example
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+*.pyw
+*.pyz
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+
+# ── Virtual Environments ──────────────────────────────────────────────────────
 venv/
 .venv/
-*.egg-info/
+env/
+.env/
+
+# ── Testing ───────────────────────────────────────────────────────────────────
 .pytest_cache/
+tests/
+sampletest.py
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
 logs/
-uploads/
 *.log
+
+# ── Uploads / User Files ──────────────────────────────────────────────────────
+uploads/
+
+# ── Generated Files (PDFs, CSVs, exports) ────────────────────────────────────
+*.pdf
+*.csv
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
 node_modules/
-dist/
+frontend/dist/
+frontend/.vite/
+frontend/node_modules/
+
+# ── IDEs & Editors ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── OS Files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.db
+*.sqlite3
+*.bak
+*.tmp

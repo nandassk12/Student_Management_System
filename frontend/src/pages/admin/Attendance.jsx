@@ -46,6 +46,13 @@ export default function AdminAttendance() {
     setPage(1)
   }
 
+  // Clear all date filters and reset to page 1
+  const handleClearFilters = () => {
+    setStartDate('')
+    setEndDate('')
+    setPage(1)
+  }
+
   const getStatusBadgeStyle = (status) => {
     switch (status) {
       case 'present': return 'text-green-600 bg-green-50 border-green-200 shadow-sm'
@@ -82,6 +89,18 @@ export default function AdminAttendance() {
             className="w-full px-3 py-1.5 border border-[#e2e8f0] rounded-lg text-xs bg-white text-[#0f172a] font-semibold outline-none focus:border-[#1e3a5f]"
           />
         </div>
+
+        {/* Clear date filters */}
+        {(startDate || endDate) && (
+          <div className="flex items-end">
+            <button
+              onClick={handleClearFilters}
+              className="w-full px-3 py-1.5 text-xs font-bold text-primary border border-primary/30 bg-navy-50 rounded-lg hover:bg-primary hover:text-white transition-colors"
+            >
+              Clear Dates
+            </button>
+          </div>
+        )}
 
         {/* Course Filter */}
         <div className="space-y-1">

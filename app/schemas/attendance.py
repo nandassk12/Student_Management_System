@@ -70,10 +70,45 @@ class AttendancePercentage(BaseModel):
 class AttendancePrediction(BaseModel):
     """Predictive attendance stats showing classes needed to hit 75%."""
 
+    course_id: int
     course: str
     current_percentage: float
     classes_attended: int
     total_classes: int
     needed_for_75: int
     status: Literal["Safe", "At Risk", "Detained"]
+
+
+class AttendanceBulkRecord(BaseModel):
+    """A single student's attendance status in a bulk request."""
+
+    student_id: int
+    status: AttendanceStatus
+
+
+class AttendanceBulkCreate(BaseModel):
+    """Payload to mark attendance for multiple students at once."""
+
+    class_id: int
+    course_id: int
+    date: datetime.date
+    records: list[AttendanceBulkRecord]
+
+    @field_validator("date")
+    @classmethod
+    def date_not_future(cls, v: datetime.date) -> datetime.date:
+        if v > datetime.date.today():
+            raise ValueError("Attendance date cannot be in the future")
+        return v
+
+
+class AttendanceSimulationResponse(BaseModel):
+    current_percentage: float
+    predicted_percentage: float
+    max_can_skip: int
+    min_must_attend: int
+    safe_to_skip: bool
+    warning_message: str
+
+
 

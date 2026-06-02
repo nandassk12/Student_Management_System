@@ -62,3 +62,15 @@ class UserOut(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ImportErrorItem(BaseModel):
+    row: int
+    reason: str
+
+
+class UserImportResponse(BaseModel):
+    created: int
+    skipped: int
+    errors: list[ImportErrorItem]
+

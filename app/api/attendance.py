@@ -11,6 +11,8 @@ Attendance router:
 from collections import defaultdict
 from typing import Annotated
 from datetime import datetime, date
+import math
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,6 +28,8 @@ from app.schemas.attendance import (
     AttendanceOut,
     AttendancePercentage,
     AttendancePrediction,
+    AttendanceBulkCreate,
+    AttendanceSimulationResponse,
 )
 from app.schemas.auth import TokenData
 
@@ -110,6 +114,85 @@ async def mark_attendance(
     await db.flush()
     await db.refresh(record)
     return AttendanceOut.model_validate(record)
+
+
+@router.post(
+    "/bulk",
+    response_model=list[AttendanceOut],
+    status_code=status.HTTP_201_CREATED,
+    summary="Teacher marks attendance in bulk",
+)
+async def mark_attendance_bulk(
+    payload: AttendanceBulkCreate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(require_teacher)],
+) -> list[AttendanceOut]:
+    # Validate referenced entities exist
+    await _get_class_or_404(payload.class_id, db)
+    await _get_course_or_404(payload.course_id, db)
+
+    if not payload.records:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Records array cannot be empty",
+        )
+
+    student_ids = [rec.student_id for rec in payload.records]
+    if len(student_ids) != len(set(student_ids)):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Duplicate student records found in the request payload",
+        )
+
+    # Validate each student exists and is a student
+    stmt_students = select(User).where(User.id.in_(student_ids))
+    students_res = await db.execute(stmt_students)
+    found_students = students_res.scalars().all()
+    found_student_ids = {s.id for s in found_students if s.role.name == "student"}
+    
+    for sid in student_ids:
+        if sid not in found_student_ids:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Student with ID {sid} not found or is not a student",
+            )
+
+    # Prevent duplicate attendance for same student + course + date
+    dup_stmt = select(Attendance).where(
+        Attendance.student_id.in_(student_ids),
+        Attendance.course_id == payload.course_id,
+        Attendance.date == payload.date,
+    )
+    dup_res = await db.execute(dup_stmt)
+    existing_records = dup_res.scalars().all()
+    if existing_records:
+        dup_sids = [r.student_id for r in existing_records]
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Attendance already marked on {payload.date} for student(s): {dup_sids}",
+        )
+
+    # Use database transaction to ensure atomicity of all attendance creation operations
+    created_records = []
+    async with await db.begin_nested():
+        for rec in payload.records:
+            record = Attendance(
+                student_id=rec.student_id,
+                course_id=payload.course_id,
+                class_id=payload.class_id,
+                date=payload.date,
+                status=rec.status,
+                marked_by=current_user.user_id,
+            )
+            db.add(record)
+            created_records.append(record)
+        await db.flush()
+
+    for record in created_records:
+        await db.refresh(record)
+
+    return [AttendanceOut.model_validate(r) for r in created_records]
+
 
 
 @router.get(
@@ -359,6 +442,7 @@ async def predict_attendance(
 
         predictions.append(
             AttendancePrediction(
+                course_id=cid,
                 course=course_obj.name,
                 current_percentage=current_percentage,
                 classes_attended=attended,
@@ -371,4 +455,79 @@ async def predict_attendance(
     # Sort by course name for predictable output order
     predictions.sort(key=lambda p: p.course)
     return predictions
+
+
+@router.get(
+    "/simulate",
+    response_model=AttendanceSimulationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Simulate future attendance scenarios (student only)",
+)
+async def simulate_attendance(
+    student_id: int,
+    course_id: int,
+    total_planned: int,
+    planning_to_skip: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+) -> AttendanceSimulationResponse:
+    # Guard: students can only query their own simulation
+    if current_user.role_name == "student" and current_user.user_id != student_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Students can only simulate attendance for themselves",
+        )
+        
+    await _get_student_or_404(student_id, db)
+    await _get_course_or_404(course_id, db)
+    
+    if total_planned < 0 or planning_to_skip < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Parameters total_planned and planning_to_skip must be non-negative",
+        )
+    if planning_to_skip > total_planned:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="planning_to_skip cannot exceed total_planned",
+        )
+        
+    # Fetch student's attendance records for this course
+    stmt = select(Attendance).where(
+        Attendance.student_id == student_id,
+        Attendance.course_id == course_id
+    )
+    res = await db.execute(stmt)
+    records = res.scalars().all()
+    
+    current_attended = sum(1 for r in records if r.status in ("present", "late"))
+    current_total = len(records)
+    
+    future_attended = current_attended + (total_planned - planning_to_skip)
+    future_total = current_total + total_planned
+    
+    current_percentage = round((current_attended / current_total * 100), 2) if current_total > 0 else 100.0
+    predicted_percentage = round((future_attended / future_total * 100), 2) if future_total > 0 else 100.0
+    
+    max_can_skip = math.floor(future_total * 0.25 - (current_total - current_attended))
+    max_can_skip = max(0, max_can_skip)
+    
+    min_must_attend = math.ceil(0.75 * future_total - current_attended)
+    min_must_attend = max(0, min(total_planned, min_must_attend))
+    
+    safe_to_skip = (planning_to_skip <= max_can_skip) and (predicted_percentage >= 75.0)
+    
+    if predicted_percentage < 75.0:
+        warning_message = "Warning: Your attendance will fall below the required 75% threshold."
+    else:
+        warning_message = "You are on track to maintain the required attendance."
+        
+    return AttendanceSimulationResponse(
+        current_percentage=current_percentage,
+        predicted_percentage=predicted_percentage,
+        max_can_skip=max_can_skip,
+        min_must_attend=min_must_attend,
+        safe_to_skip=safe_to_skip,
+        warning_message=warning_message,
+    )
 

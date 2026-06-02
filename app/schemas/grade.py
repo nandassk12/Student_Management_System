@@ -13,11 +13,14 @@ from app.schemas.user import UserOut
 from app.schemas.course import CourseOut
 
 # Enforce valid letter grades at schema level
-LetterGrade = Literal["A", "B", "C", "D", "F"]
+LetterGrade = Literal["O", "A+", "A", "B+", "B", "C", "D", "F"]
 
 # GPA scale used for calculation responses
 GRADE_GPA_MAP: dict[str, float] = {
+    "O": 4.0,
+    "A+": 4.0,
     "A": 4.0,
+    "B+": 3.0,
     "B": 3.0,
     "C": 2.0,
     "D": 1.0,
@@ -126,4 +129,66 @@ class GradeWhatIfResponse(BaseModel):
     predicted_gpa: float
     difference: float        # e.g. +0.3 or -0.1
     impact: Literal["positive", "negative", "neutral"]
+
+
+class CourseResult(BaseModel):
+    course: str
+    marks: float
+    grade: str
+    result: Literal["distinction", "pass", "fail"]
+
+
+class ResultCalculationOut(BaseModel):
+    courses: list[CourseResult]
+    overall_result: Literal["PASS", "FAIL", "DISTINCTION"]
+    semester_gpa: float
+
+
+class SgpaCourseOut(BaseModel):
+    course_id: int
+    course_name: str
+    credits: int
+    marks: float
+    grade: str
+    points: int
+
+
+class SgpaResponse(BaseModel):
+    semester: int
+    sgpa: float
+    total_credits: int
+    courses: list[SgpaCourseOut]
+
+
+class SemesterCgpaDetail(BaseModel):
+    semester: int
+    sgpa: float
+    credits: int
+
+
+class CgpaResponse(BaseModel):
+    cgpa: float
+    total_credits: int
+    semesters: list[SemesterCgpaDetail]
+
+
+class CgpaPredictionItem(BaseModel):
+    course_id: int
+    expected_marks: float
+
+
+class SemesterBreakdownItem(BaseModel):
+    semester: int
+    sgpa: float
+    credits: int
+
+
+class CgpaPredictionResponse(BaseModel):
+    current_cgpa: float
+    predicted_cgpa: float
+    difference: float
+    impact: Literal["positive", "negative", "neutral"]
+    breakdown: list[SemesterBreakdownItem]
+
+
 

@@ -58,3 +58,13 @@ class LeaveOut(BaseModel):
     teacher: UserOut
 
     model_config = {"from_attributes": True}
+
+
+class LeaveBalanceOut(BaseModel):
+    """Leave balance info returned to callers."""
+
+    total_allowed: int
+    used: int
+    remaining: int
+    semester: int
+
