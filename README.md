@@ -27,26 +27,33 @@ A production-ready educational platform that connects students, teachers, and ad
 ##  Tech Stack
 
 ### Backend
-*   **Framework**: FastAPI (Async ASGI, Python 3.11/3.12)
-*   **Database**: PostgreSQL (Asynchronous Connection Pool via `asyncpg`)
-*   **ORM**: SQLAlchemy 2.0 (Modern Type-Safe Declarative Mapped Columns)
-*   **Migrations**: Alembic
-*   **PDF Generation**: ReportLab (receipts and administrative reports)
-*   **AI/LLM Integration**: OpenWebUI API connection via async `httpx` client
-*   **Caching**: `fastapi-cache2` (InMemoryBackend)
-*   **Rate Limiting**: `slowapi` (IP-based token bucket limiter, 100 req/min limit)
-*   **Authentication**: JWT (JSON Web Tokens) with cryptographically hashed passwords (`bcrypt`)
-*   **Containerization**: Docker & Docker Compose
+
+| Technology | Purpose |
+| :--- | :--- |
+| **FastAPI** (0.111.0) | Async Python web framework |
+| **PostgreSQL** (Latest) | Primary relational database |
+| **SQLAlchemy** (2.0 with asyncpg driver) | Type-safe async ORM |
+| **Alembic** (1.13.1) | Database migration management |
+| **OpenWebUI API** (httpx async client) | LLM / AI integration layer |
+| **ReportLab** (4.5.1) | Dynamic PDF generation |
+| **python-jose + passlib** (bcrypt) | JWT auth & password hashing |
+| **Pydantic v2** (pydantic-settings) | Data validation & env config |
+| **slowapi** (100 req/min IP bucket) | Rate limiting middleware |
+| **fastapi-cache2** (InMemoryBackend) | Response caching |
+| **Docker & Docker Compose** (—) | Containerized deployment |
 
 ### Frontend
-*   **Core Library**: React 18 (Vite build system)
-*   **Styling**: Tailwind CSS v3 (utility classes only)
-*   **Routing**: React Router v6
-*   **State Management & Data Fetching**: TanStack React Query v5
-*   **HTTP Client**: Axios with automatic JWT Bearer token interceptor and 401 redirect handling
-*   **Form Handling**: React Hook Form
-*   **Data Visualization**: Recharts (for analytics and progress trends)
-*   **Notifications**: `react-hot-toast` for real-time notifications
+
+| Technology | Purpose |
+| :--- | :--- |
+| **React 18** (Vite build system) | Core UI library |
+| **Tailwind CSS v3** (Utility classes only) | Styling framework |
+| **React Router v6** (—) | Client-side routing |
+| **TanStack React Query v5** (With DevTools) | Server state & data fetching |
+| **Axios** (JWT Bearer interceptor) | HTTP client with auto 401 redirect |
+| **React Hook Form** (—) | Form state management |
+| **Recharts** (—) | Analytics charts & trend graphs |
+| **react-hot-toast** (—) | Real-time success/error notifications |
 
 ---
 
