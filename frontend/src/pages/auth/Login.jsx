@@ -146,8 +146,28 @@ export default function Login() {
           </div>
 
           {/* Rightmost 18vw Cards Column - Compressed gaps and centralized */}
-          <div style={{ width: '18vw' }} className="flex flex-col justify-center h-full pr-12 items-end gap-y-8">
-            {/* Card 1 (Inward) */}
+          <div style={{ width: '18vw' }} className="flex flex-col justify-center h-full pr-12 items-end gap-y-5">
+            {/* Card 1: Narrative Student Reports */}
+            <div className="w-[290px] -translate-x-4 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
+              <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </span>
+              <span className="truncate">Narrative Student Reports</span>
+            </div>
+
+            {/* Card 2: Institutional Analytics */}
+            <div className="w-[290px] translate-x-0 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
+              <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
+                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+                </svg>
+              </span>
+              <span className="truncate">Institutional Analytics</span>
+            </div>
+
+            {/* Card 3 (Inward) */}
             <div className="w-[290px] -translate-x-4 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -157,7 +177,7 @@ export default function Login() {
               <span className="truncate">Real-time attendance tracking</span>
             </div>
 
-            {/* Card 2 (Outward) */}
+            {/* Card 4 (Outward) */}
             <div className="w-[290px] translate-x-0 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -168,7 +188,7 @@ export default function Login() {
               <span className="truncate">Smart GPA calculator</span>
             </div>
 
-            {/* Card 3 (Inward) */}
+            {/* Card 5 (Inward) */}
             <div className="w-[290px] -translate-x-4 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -178,7 +198,7 @@ export default function Login() {
               <span className="truncate">Role-based access control</span>
             </div>
 
-            {/* Card 4 (Outward) */}
+            {/* Card 6 (Outward) */}
             <div className="w-[290px] translate-x-0 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -188,7 +208,7 @@ export default function Login() {
               <span className="truncate">Study material uploads</span>
             </div>
 
-            {/* Card 5 (Inward) */}
+            {/* Card 7 (Inward) */}
             <div className="w-[290px] -translate-x-4 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -199,7 +219,7 @@ export default function Login() {
               <span className="truncate">Leave management system</span>
             </div>
 
-            {/* Card 6 (Outward) */}
+            {/* Card 8 (Outward) */}
             <div className="w-[290px] translate-x-0 flex items-center gap-3 py-2 px-4 bg-white/[0.06] backdrop-blur-xl border border-white/[0.15] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.6)] rounded-full text-slate-200 text-sm font-medium tracking-wide hover:-translate-y-1 hover:bg-white/[0.12] hover:border-white/30 transition-all duration-300 ease-out cursor-pointer">
               <span className="w-8 h-8 rounded-full bg-white/[0.07] flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

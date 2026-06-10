@@ -114,16 +114,19 @@ export default function StudentGrades() {
   // Get color pills for letter grades
   const getGradePillClass = (letter) => {
     switch (letter) {
-      case 'A': return 'text-green-700 bg-green-50 border-green-200 shadow-[0_1px_2px_rgba(22,163,74,0.05)]'
-      case 'B': return 'text-blue-700 bg-blue-50 border-blue-200 shadow-[0_1px_2px_rgba(37,99,235,0.05)]'
-      case 'C': return 'text-yellow-700 bg-yellow-50 border-yellow-200 shadow-[0_1px_2px_rgba(202,138,4,0.05)]'
-      case 'D': return 'text-orange-700 bg-orange-50 border-orange-200 shadow-[0_1px_2px_rgba(234,88,12,0.05)]'
+      case 'O': return 'text-green-700 bg-green-50 border-green-200 shadow-[0_1px_2px_rgba(22,163,74,0.05)]'
+      case 'A+': return 'text-blue-700 bg-blue-50 border-blue-200 shadow-[0_1px_2px_rgba(37,99,235,0.05)]'
+      case 'A': return 'text-indigo-700 bg-indigo-50 border-indigo-200 shadow-[0_1px_2px_rgba(99,102,241,0.05)]'
+      case 'B+': return 'text-purple-700 bg-purple-50 border-purple-200 shadow-[0_1px_2px_rgba(168,85,247,0.05)]'
+      case 'B': return 'text-yellow-700 bg-yellow-50 border-yellow-200 shadow-[0_1px_2px_rgba(202,138,4,0.05)]'
+      case 'C': return 'text-orange-700 bg-orange-50 border-orange-200 shadow-[0_1px_2px_rgba(234,88,12,0.05)]'
+      case 'D': return 'text-pink-700 bg-pink-50 border-pink-200 shadow-[0_1px_2px_rgba(219,39,119,0.05)]'
       case 'F': return 'text-red-700 bg-red-50 border-red-200 shadow-[0_1px_2px_rgba(220,38,38,0.05)]'
       default: return 'text-slate-400 bg-slate-50 border-slate-200'
     }
   }
 
-  const breakdownLetters = ['A', 'B', 'C', 'D', 'F']
+  const breakdownLetters = ['O', 'A+', 'A', 'B+', 'B', 'C', 'D', 'F']
 
   return (
     <div className="space-y-6 page-enter">
@@ -288,24 +291,36 @@ export default function StudentGrades() {
             {gpaSummary && (
               <div className="card bg-white p-5 flex flex-col justify-between">
                 <div>
-                  <span className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3 block">Grade Distribution (4.0 Scale)</span>
-                  <div className="grid grid-cols-5 gap-2 mt-1">
+                  <span className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3 block">Grade Distribution (10-Point Scale)</span>
+                  <div className="grid grid-cols-4 gap-2 mt-1">
                     {breakdownLetters.map((letter) => {
                       const count = gpaSummary.grade_breakdown?.[letter] || 0
+                      const gradePointsMap = {
+                        'O': 10,
+                        'A+': 9,
+                        'A': 8,
+                        'B+': 7,
+                        'B': 6,
+                        'C': 5,
+                        'D': 4,
+                        'F': 0
+                      }
+                      const pts = gradePointsMap[letter] !== undefined ? gradePointsMap[letter] : 0
                       return (
                         <div 
                           key={letter}
-                          className="p-2.5 rounded-lg border border-card-border bg-slate-50/30 text-center flex flex-col justify-between"
+                          className="p-2 rounded-lg border border-card-border bg-slate-50/30 text-center flex flex-col justify-between"
                         >
                           <span className="text-xs font-black text-text-secondary block">{letter}</span>
-                          <span className="text-base font-black text-primary mt-1 block">{count}</span>
+                          <span className="text-[10px] text-text-muted mt-0.5 font-bold block">{pts} Pt</span>
+                          <span className="text-sm font-black text-primary mt-1 block">{count}</span>
                         </div>
                       )
                     })}
                   </div>
                 </div>
                 <div className="text-[9px] text-text-muted italic mt-4 pt-3 border-t border-slate-100">
-                  Reflects letter grades recorded on standard 4.0 scale courses.
+                  Reflects letter grades and points recorded on standard 10-point scale courses.
                 </div>
               </div>
             )}

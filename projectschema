@@ -1,0 +1,180 @@
+"table_name","column_name","data_type","is_nullable","character_maximum_length"
+"ai_health_reports","id","integer","NO",NULL
+"ai_health_reports","generated_at","timestamp with time zone","NO",NULL
+"ai_health_reports","semester","integer","NO",NULL
+"ai_health_reports","academic_year","character varying","NO",20
+"ai_health_reports","content","text","NO",NULL
+"ai_health_reports","flags","jsonb","NO",NULL
+"ai_health_reports","generated_by","character varying","NO",30
+"ai_reports","id","integer","NO",NULL
+"ai_reports","student_id","integer","NO",NULL
+"ai_reports","teacher_id","integer","NO",NULL
+"ai_reports","semester","integer","NO",NULL
+"ai_reports","academic_year","character varying","NO",20
+"ai_reports","narrative","text","NO",NULL
+"ai_reports","edited_narrative","text","YES",NULL
+"ai_reports","risk_flags","jsonb","YES",NULL
+"ai_reports","status","character varying","NO",20
+"ai_reports","current_cgpa","numeric","YES",NULL
+"ai_reports","overall_attendance","numeric","YES",NULL
+"ai_reports","created_at","timestamp with time zone","YES",NULL
+"ai_reports","approved_at","timestamp with time zone","YES",NULL
+"attendance","id","integer","NO",NULL
+"attendance","student_id","integer","NO",NULL
+"attendance","course_id","integer","NO",NULL
+"attendance","class_id","integer","NO",NULL
+"attendance","date","date","NO",NULL
+"attendance","status","character varying","NO",10
+"attendance","marked_by","integer","NO",NULL
+"attendance","created_at","timestamp with time zone","NO",NULL
+"classes","id","integer","NO",NULL
+"classes","name","character varying","NO",150
+"classes","department_id","integer","NO",NULL
+"classes","year","integer","NO",NULL
+"classes","semester","integer","NO",NULL
+"courses","id","integer","NO",NULL
+"courses","name","character varying","NO",150
+"courses","code","character varying","NO",20
+"courses","department_id","integer","NO",NULL
+"courses","credits","integer","NO",NULL
+"courses","semester","integer","NO",NULL
+"departments","id","integer","NO",NULL
+"departments","name","character varying","NO",150
+"departments","code","character varying","NO",20
+"enrollment","id","integer","NO",NULL
+"enrollment","student_id","integer","NO",NULL
+"enrollment","class_id","integer","NO",NULL
+"fees","id","integer","NO",NULL
+"fees","student_id","integer","NO",NULL
+"fees","amount","double precision","NO",NULL
+"fees","fee_type","character varying","NO",20
+"fees","status","character varying","NO",20
+"fees","due_date","date","NO",NULL
+"fees","paid_date","date","YES",NULL
+"fees","created_at","timestamp with time zone","NO",NULL
+"grades","id","integer","NO",NULL
+"grades","student_id","integer","NO",NULL
+"grades","course_id","integer","NO",NULL
+"grades","marks","double precision","NO",NULL
+"grades","grade","character varying","NO",2
+"grades","semester","integer","NO",NULL
+"grades","academic_year","character varying","NO",20
+"grades","created_at","timestamp with time zone","NO",NULL
+"leave_requests","id","integer","NO",NULL
+"leave_requests","student_id","integer","NO",NULL
+"leave_requests","teacher_id","integer","NO",NULL
+"leave_requests","reason","text","NO",NULL
+"leave_requests","from_date","date","NO",NULL
+"leave_requests","to_date","date","NO",NULL
+"leave_requests","status","character varying","NO",20
+"leave_requests","created_at","timestamp with time zone","NO",NULL
+"notice_board","id","integer","NO",NULL
+"notice_board","author_id","integer","NO",NULL
+"notice_board","title","character varying","NO",200
+"notice_board","content","text","NO",NULL
+"notice_board","target_role","character varying","NO",50
+"notice_board","class_id","integer","YES",NULL
+"notice_board","created_at","timestamp with time zone","NO",NULL
+"roles","id","integer","NO",NULL
+"roles","name","character varying","NO",50
+"student_documents","id","integer","NO",NULL
+"student_documents","student_id","integer","YES",NULL
+"student_documents","doc_type","character varying","YES",50
+"student_documents","file_name","character varying","YES",255
+"student_documents","file_path","character varying","YES",255
+"student_documents","uploaded_at","timestamp with time zone","YES",NULL
+"student_profile","id","integer","NO",NULL
+"student_profile","user_id","integer","NO",NULL
+"student_profile","department_id","integer","NO",NULL
+"student_profile","class_id","integer","NO",NULL
+"student_profile","roll_number","character varying","NO",50
+"student_profile","dob","date","YES",NULL
+"student_profile","blood_group","character varying","YES",10
+"student_profile","phone","character varying","YES",20
+"student_profile","address","character varying","YES",300
+"student_profile","emergency_contact","character varying","YES",100
+"student_profile","profile_photo","character varying","YES",300
+"student_profile","first_name","character varying","YES",75
+"student_profile","last_name","character varying","YES",75
+"student_profile","gender","character varying","YES",20
+"student_profile","nationality","character varying","YES",50
+"student_profile","state","character varying","YES",50
+"student_profile","year_of_study","integer","YES",NULL
+"student_profile","batch_year","integer","YES",NULL
+"student_profile","admission_date","date","YES",NULL
+"student_profile","hostel_status","character varying","YES",20
+"student_profile","personal_email","character varying","YES",150
+"student_profile","current_address","text","YES",NULL
+"student_profile","permanent_address","text","YES",NULL
+"student_profile","parent_name","character varying","YES",100
+"student_profile","parent_relationship","character varying","YES",50
+"student_profile","parent_phone","character varying","YES",15
+"student_profile","emergency_contact_name","character varying","YES",100
+"student_profile","emergency_contact_rel","character varying","YES",50
+"student_profile","emergency_contact_phone","character varying","YES",15
+"student_profile","signature","character varying","YES",255
+"student_profile","profile_completed_pct","integer","YES",NULL
+"student_profile","last_edited_at","timestamp with time zone","YES",NULL
+"study_materials","id","integer","NO",NULL
+"study_materials","teacher_id","integer","NO",NULL
+"study_materials","course_id","integer","NO",NULL
+"study_materials","title","character varying","NO",200
+"study_materials","description","text","YES",NULL
+"study_materials","file_path","character varying","NO",500
+"study_materials","file_type","character varying","NO",20
+"study_materials","file_size","integer","YES",NULL
+"study_materials","created_at","timestamp with time zone","NO",NULL
+"teacher_documents","id","integer","NO",NULL
+"teacher_documents","teacher_id","integer","YES",NULL
+"teacher_documents","doc_type","character varying","YES",50
+"teacher_documents","file_name","character varying","YES",255
+"teacher_documents","file_path","character varying","YES",255
+"teacher_documents","uploaded_at","timestamp with time zone","YES",NULL
+"teacher_leave_requests","id","integer","NO",NULL
+"teacher_leave_requests","teacher_id","integer","NO",NULL
+"teacher_leave_requests","admin_id","integer","NO",NULL
+"teacher_leave_requests","reason","text","NO",NULL
+"teacher_leave_requests","from_date","date","NO",NULL
+"teacher_leave_requests","to_date","date","NO",NULL
+"teacher_leave_requests","status","character varying","NO",20
+"teacher_leave_requests","created_at","timestamp with time zone","NO",NULL
+"teacher_profile","id","integer","NO",NULL
+"teacher_profile","user_id","integer","YES",NULL
+"teacher_profile","department_id","integer","YES",NULL
+"teacher_profile","full_name","character varying","YES",150
+"teacher_profile","gender","character varying","YES",20
+"teacher_profile","date_of_birth","date","YES",NULL
+"teacher_profile","employee_id","character varying","YES",50
+"teacher_profile","designation","character varying","YES",100
+"teacher_profile","employment_type","character varying","YES",50
+"teacher_profile","highest_qualification","character varying","YES",100
+"teacher_profile","phone","character varying","YES",15
+"teacher_profile","alternate_phone","character varying","YES",15
+"teacher_profile","profile_photo","character varying","YES",255
+"teacher_profile","signature","character varying","YES",255
+"teacher_profile","personal_email","character varying","YES",150
+"teacher_profile","current_address","text","YES",NULL
+"teacher_profile","permanent_address","text","YES",NULL
+"teacher_profile","emergency_contact_name","character varying","YES",100
+"teacher_profile","emergency_contact_rel","character varying","YES",50
+"teacher_profile","emergency_contact_phone","character varying","YES",15
+"teacher_profile","bank_name","character varying","YES",100
+"teacher_profile","account_number","character varying","YES",30
+"teacher_profile","ifsc_code","character varying","YES",15
+"teacher_profile","profile_completed_pct","integer","YES",NULL
+"teacher_profile","last_edited_at","timestamp with time zone","YES",NULL
+"timetable","id","integer","NO",NULL
+"timetable","class_id","integer","NO",NULL
+"timetable","course_id","integer","NO",NULL
+"timetable","teacher_id","integer","NO",NULL
+"timetable","day","character varying","NO",10
+"timetable","start_time","time without time zone","NO",NULL
+"timetable","end_time","time without time zone","NO",NULL
+"timetable","room","character varying","NO",50
+"users","id","integer","NO",NULL
+"users","username","character varying","NO",100
+"users","email","character varying","NO",255
+"users","password_hash","character varying","NO",255
+"users","role_id","integer","NO",NULL
+"users","is_active","boolean","NO",NULL
+"users","created_at","timestamp with time zone","NO",NULL
