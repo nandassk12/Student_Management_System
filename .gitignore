@@ -67,3 +67,13 @@ desktop.ini
 *.sqlite3
 *.bak
 *.tmp
+
+# ── Large media / demo files ──────────────────────────────────────────────────
+*.mp4
+*.mov
+*.avi
+*.docx
+
+# ── Scratch / one-off files ───────────────────────────────────────────────────
+sampletest.py
+mock_data.sql
