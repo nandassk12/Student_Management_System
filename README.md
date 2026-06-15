@@ -8,7 +8,7 @@ A production-ready educational platform that connects students, teachers, and ad
 
 |  Home Page Dashboard |  AI Reports & Performance Narrative |
 | :---: | :---: |
-| ![Home Page](./home_page.png) | ![Report Page](./report_page.png) |
+| ![Home Page](./docs/home_page.png) | ![Report Page](./docs/report_page.png) |
 
 ---
 
@@ -355,7 +355,7 @@ Ensure Docker and Docker Compose (or Python 3.11+ and Node.js) are installed.
     ```
 3.  **Run Application**:
     ```bash
-    uvicorn main:app --reload --port 8000
+    uvicorn app.main:app --reload --port 8000
     ```
 
 #### 2. Frontend (React + Vite)
